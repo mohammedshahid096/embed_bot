@@ -31,6 +31,10 @@ interface Config {
     CHROMA_PORT: number;
     CHROMA_SSL: boolean;
   };
+
+  hosts: {
+    CLIENT_HOST_URL: string;
+  };
 }
 
 dotenv.config();
@@ -65,6 +69,10 @@ const config: Config = {
     CHROMA_HOST: process.env.CHROMA_HOST ?? "localhost",
     CHROMA_PORT: Number(process.env.CHROMA_PORT ?? 8000),
     CHROMA_SSL: Boolean(process.env.CHROMA_SSL ?? false),
+  },
+
+  hosts: {
+    CLIENT_HOST_URL: "http://localhost:3000",
   },
 };
 

@@ -20,6 +20,12 @@ export const sendRegisterVerificationLinkValidation = celebrate({
   }).required(),
 });
 
+export const verifyRegisterVerificationLinkValidation = celebrate({
+  query: Joi.object({
+    token: Joi.string().required().label("Token"),
+  }).required(),
+});
+
 // export const loginUserValidation = celebrate({
 //   body: {
 //     email: Joi.string().email().required().label("Email"),

@@ -8,7 +8,11 @@ import {
 } from "../../types/users/index.types";
 import UserModel from "../../schema/user.model";
 import RedisServiceClass from "../../services/redis.service";
-import { createVerificationToken } from "../../utils/jwt.util";
+import {
+  createVerificationToken,
+  verifyVerificationToken,
+} from "../../utils/jwt.util";
+import config from "../../config/index.config";
 
 export const sendRegisterVerificationLinkController = async (
   req: Request,
@@ -53,11 +57,62 @@ export const sendRegisterVerificationLinkController = async (
       createdAt: new Date().toISOString(),
     };
 
+    // Construct verification link
+    const verificationLink = `${config.hosts.CLIENT_HOST_URL}/signup/verify-email?token=${verificationToken}`;
+    console.log(verificationLink);
+
     await redisService.setRedisJSON(email, cacheVerificationDetails);
 
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "verification link sent successfully",
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+export const verifyRegisterVerificationLinkController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { token } = req.query as { token: string };
+
+    const verfifyResult = await verifyVerificationToken(token);
+
+    if (!verfifyResult?.success) {
+      return next(
+        httpError.Unauthorized("Invalid or expired verification link"),
+      );
+    }
+    const redisService = new RedisServiceClass();
+    const verificationCacheData = (await redisService.getRedisJSON(
+      verfifyResult?.id as string,
+    )) as RedisRegisterUserBody;
+    if (!verificationCacheData) {
+      return next(httpError.BadRequest("Invalid or expired verification link"));
+    }
+
+    const isAlreadyUserExist = await UserModel.findOne({
+      email: verificationCacheData?.email,
+    });
+
+    if (isAlreadyUserExist) {
+      return next(httpError.Conflict("User Already Exist"));
+    }
+
+    const user = new UserModel({
+      email: verificationCacheData.email,
+      password: verificationCacheData.password,
+      isEmailVerified: true,
+    });
+    await user.save();
+    await redisService.deleteRedisKey(verificationCacheData?.email);
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "User registered successfully",
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

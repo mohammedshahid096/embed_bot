@@ -9,10 +9,16 @@ import {
 import UserModel from "../../schema/user.model";
 import RedisServiceClass from "../../services/redis.service";
 import {
+  createAccessToken,
+  createRefreshToken,
   createVerificationToken,
   verifyVerificationToken,
 } from "../../utils/jwt.util";
 import config from "../../config/index.config";
+import {
+  sendAccessTokenCookie,
+  sendRefreshTokenCookie,
+} from "../../utils/cookie.util";
 
 export const sendRegisterVerificationLinkController = async (
   req: Request,
@@ -103,13 +109,21 @@ export const verifyRegisterVerificationLinkController = async (
       return next(httpError.Conflict("User Already Exist"));
     }
 
-    const user = new UserModel({
+    const newUser = new UserModel({
       email: verificationCacheData.email,
       password: verificationCacheData.password,
       isEmailVerified: true,
+      lastLoginAt: new Date(),
     });
-    await user.save();
+    await newUser.save();
     await redisService.deleteRedisKey(verificationCacheData?.email);
+
+    const accessToken = await createAccessToken(newUser?._id?.toString());
+    const refreshToken = await createRefreshToken(newUser?._id?.toString());
+
+    sendAccessTokenCookie(res, accessToken);
+    sendRefreshTokenCookie(res, refreshToken);
+
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "User registered successfully",

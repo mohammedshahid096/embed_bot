@@ -22,8 +22,15 @@ interface Config {
   jwt: {
     ACCESS_TOKEN_KEY: string;
     ACCESS_TOKEN_KEY_TIME: string;
+    REFRESH_TOKEN_KEY: string;
+    REFRESH_TOKEN_KEY_TIME: string;
     VERIFICATION_TOKEN_KEY: string;
     VERIFICATION_TOKEN_KEY_TIME: string;
+  };
+
+  cookie: {
+    ACCESS_TOKEN_COOKIE_TIME: string;
+    REFRESH_TOKEN_COOKIE_TIME: string;
   };
 
   chromadb: {
@@ -58,11 +65,20 @@ const config: Config = {
   },
 
   jwt: {
-    ACCESS_TOKEN_KEY: process.env.ACCESS_TOKEN_KEY || "something",
-    ACCESS_TOKEN_KEY_TIME: process.env.ACCESS_TOKEN_KEY_TIME || "1D",
-    VERIFICATION_TOKEN_KEY: process.env.VERIFICATION_TOKEN_KEY || "something2",
+    ACCESS_TOKEN_KEY: process.env.ACCESS_TOKEN_KEY || "something_access_token",
+    ACCESS_TOKEN_KEY_TIME: process.env.ACCESS_TOKEN_KEY_TIME || "5m",
+    REFRESH_TOKEN_KEY:
+      process.env.REFRESH_TOKEN_KEY || "something_refresh_token",
+    REFRESH_TOKEN_KEY_TIME: process.env.REFRESH_TOKEN_KEY_TIME || "3D",
+    VERIFICATION_TOKEN_KEY:
+      process.env.VERIFICATION_TOKEN_KEY || "something_verification_token",
     VERIFICATION_TOKEN_KEY_TIME:
       process.env.VERIFICATION_TOKEN_KEY_TIME || "5m",
+  },
+
+  cookie: {
+    ACCESS_TOKEN_COOKIE_TIME: process.env.ACCESS_TOKEN_COOKIE_TIME || "5", //mins
+    REFRESH_TOKEN_COOKIE_TIME: process.env.REFRESH_TOKEN_COOKIE_TIME || "7", //days
   },
 
   chromadb: {

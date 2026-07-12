@@ -1,4 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from "express";
+import cookieParser from "cookie-parser";
 // configs
 import corsConfig from "./config/cors.config";
 import helmetConfig from "./config/helmet.config";
@@ -17,6 +18,7 @@ MongoDataBaseConnection();
 app.use(ratelimitConfig);
 app.use(compressionConfig);
 app.use(express.json());
+app.use(cookieParser());
 app.use(helmetConfig);
 app.use(corsConfig);
 app.use(express.urlencoded({ extended: true }));

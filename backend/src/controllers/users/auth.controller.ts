@@ -136,7 +136,7 @@ export const verifyRegisterVerificationLinkController = async (
     sendRefreshTokenCookie(res, refreshToken);
 
     responseHandlingUtil.successResponseStandard(res, {
-      statusCode: 200,
+      statusCode: 201,
       message: "User registered successfully",
     });
   } catch (error) {

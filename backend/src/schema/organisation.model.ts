@@ -1,5 +1,6 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import modelConstants from "../constants/model.constant";
+import { UserInterface } from "./user.model";
 
 export interface OrganizationInterface extends Document {
   name: string;
@@ -15,6 +16,7 @@ export interface OrganizationInterface extends Document {
   };
   contact: string;
   description: string;
+  userId: mongoose.Types.ObjectId | UserInterface;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,6 +39,11 @@ const organizationSchema = new Schema<OrganizationInterface>(
       type: String,
       minLength: 50,
       maxLength: 500,
+      required: true,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: modelConstants.user,
       required: true,
     },
   },

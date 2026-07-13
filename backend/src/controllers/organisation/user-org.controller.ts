@@ -4,6 +4,7 @@ import httpErrors from "http-errors";
 import errorHandling, { AppError } from "../../utils/errorHandling.util";
 import responseHandlingUtil from "../../utils/responseHandling.util";
 import { OnBoardOrganisationBody } from "../../types/organisation/index.types";
+import UserModel from "../../schema/user.model";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -18,6 +19,10 @@ export const onBoardingOrganisationController = async (
     const newOrgDetails = await OrganizationModel.create({
       ...onBoardOrgDetails,
       userId: userId!,
+    });
+
+    await UserModel.findByIdAndUpdate(userId, {
+      organisationId: newOrgDetails?._id,
     });
 
     responseHandlingUtil.successResponseStandard(res, {

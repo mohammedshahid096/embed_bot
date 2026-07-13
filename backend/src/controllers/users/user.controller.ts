@@ -11,13 +11,14 @@ export const userProfileDetailsController = async (
 ) => {
   try {
     const userId = req?.authUser?._id;
-    const userExist = await UserModel.findById(userId);
+    const userExist = await UserModel.findById(userId).lean();
     if (!userExist) return next(httpErrors.NotFound("user not found"));
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "user profile fetched successfully",
       data: {
-        userExist,
+        ...userExist,
+        organisationId: userExist.organisationId || null,
       },
     });
   } catch (error) {

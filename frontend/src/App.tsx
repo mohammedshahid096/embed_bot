@@ -1,12 +1,17 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import SignupPage from "@/pages/SignupPage";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { routes, type RouteConfig } from "../src/view/routes";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="*" element={<Navigate to="/signup" replace />} />
+        <Route>
+          {routes.map((route: RouteConfig, index: number) => {
+            return (
+              <Route key={index} path={route.path} element={route.element} />
+            );
+          })}
+        </Route>
       </Routes>
     </BrowserRouter>
   );

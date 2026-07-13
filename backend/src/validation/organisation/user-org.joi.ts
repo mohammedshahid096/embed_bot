@@ -15,6 +15,6 @@ export const onBoardingOrganisationValidation = celebrate({
       .label("Address"),
     contact: Joi.string().min(3).max(10).required().label("Contact"),
     description: Joi.string().min(50).max(500).required().label("Description"),
-    website: Joi.string().required().label("Website"),
+    website: Joi.string().uri().required().label("Website"),
   }).required(),
 });

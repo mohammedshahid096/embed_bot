@@ -29,3 +29,22 @@ export const onBoardingOrganisationController = async (
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
+
+export const getUserOrganisationDetailsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req?.authUser?._id;
+    const orgDetails = await OrganizationModel.findOne({ userId });
+    if (!orgDetails) return next(httpErrors.NotFound("Organisation not found"));
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Organisation Details Fetched Successfully",
+      data: orgDetails,
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};

@@ -1,10 +1,28 @@
 import { Link } from "react-router-dom";
-import { Bot, Sparkles, ArrowRight, Menu, X } from "lucide-react";
+import { Bot, Sparkles, ArrowRight, Menu, X, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  initializeTheme,
+  setTheme as saveTheme,
+  applyThemeToDOM,
+  type Theme,
+} from "@/helpers/theme.helper";
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setThemeState] = useState<Theme>("dark");
+
+  useEffect(() => {
+    setThemeState(initializeTheme());
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setThemeState(newTheme);
+    saveTheme(newTheme);
+    applyThemeToDOM(newTheme);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-background/60 backdrop-blur-xl">
@@ -15,7 +33,10 @@ function Navbar() {
             <Bot className="h-4.5 w-4.5 text-white" />
           </div>
           <span className="text-lg font-bold tracking-tight text-foreground">
-            Embed<span className="bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent">Bot</span>
+            Embed
+            <span className="bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent">
+              Bot
+            </span>
           </span>
         </Link>
 
@@ -34,8 +55,23 @@ function Navbar() {
 
         {/* CTA */}
         <div className="hidden items-center gap-3 md:flex">
+          <button
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-4.5 w-4.5" />
+            ) : (
+              <Moon className="h-4.5 w-4.5" />
+            )}
+          </button>
           <Link to="/login">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Log in
             </Button>
           </Link>
@@ -51,13 +87,30 @@ function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <button
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <button
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </button>
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -76,7 +129,10 @@ function Navbar() {
             ))}
             <hr className="my-2 border-white/5" />
             <Link to="/login" onClick={() => setMobileOpen(false)}>
-              <Button variant="ghost" className="w-full justify-start text-muted-foreground">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-muted-foreground"
+              >
                 Log in
               </Button>
             </Link>

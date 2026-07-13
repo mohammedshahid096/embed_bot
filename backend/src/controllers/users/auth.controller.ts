@@ -3,6 +3,7 @@ import httpError from "http-errors";
 import errorHandling, { AppError } from "../../utils/errorHandling.util";
 import responseHandlingUtil from "../../utils/responseHandling.util";
 import {
+  LoginAuthBody,
   RedisRegisterUserBody,
   RegisterUserBody,
 } from "../../types/users/index.types";
@@ -19,6 +20,10 @@ import {
   sendAccessTokenCookie,
   sendRefreshTokenCookie,
 } from "../../utils/cookie.util";
+import {
+  hashPasswordMethod,
+  verifyPasswordMethod,
+} from "../../utils/bcrypt.util";
 
 export const sendRegisterVerificationLinkController = async (
   req: Request,
@@ -109,9 +114,13 @@ export const verifyRegisterVerificationLinkController = async (
       return next(httpError.Conflict("User Already Exist"));
     }
 
+    const hashPassword = await hashPasswordMethod(
+      verificationCacheData.password,
+    );
+
     const newUser = new UserModel({
       email: verificationCacheData.email,
-      password: verificationCacheData.password,
+      password: hashPassword,
       isEmailVerified: true,
       lastLoginAt: new Date(),
     });
@@ -127,6 +136,46 @@ export const verifyRegisterVerificationLinkController = async (
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "User registered successfully",
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+export const loginAuthController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email, password } = req.body as LoginAuthBody;
+
+    const user = await UserModel.findOneAndUpdate(
+      { email },
+      { lastLoginAt: new Date() },
+      { new: true },
+    ).select("+password");
+    if (!user) {
+      return next(httpError.BadRequest("Invalid Email or Password"));
+    }
+
+    const isPasswordValid = await verifyPasswordMethod(password, user.password);
+    if (!isPasswordValid) {
+      return next(httpError.BadRequest("Invalid Email or Password"));
+    }
+
+    const accessToken = await createAccessToken(user?._id?.toString());
+    const refreshToken = await createRefreshToken(user?._id?.toString());
+
+    sendAccessTokenCookie(res, accessToken);
+    sendRefreshTokenCookie(res, refreshToken);
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "User logged in successfully",
+      data: {
+        accessToken,
+      },
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

@@ -8,3 +8,8 @@ export interface RedisRegisterUserBody extends RegisterUserBody {
   token: string;
   createdAt: string;
 }
+
+export interface LoginAuthBody {
+  email: string;
+  password: string;
+}

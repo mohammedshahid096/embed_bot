@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "celebrate": "^15.0.3",
     "colorette": "^2.0.20",
     "compression": "^1.8.1",
@@ -27,6 +28,7 @@
     "mongoose": "^9.7.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",

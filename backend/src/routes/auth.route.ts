@@ -1,9 +1,11 @@
 import { Router } from "express";
 import {
+  loginAuthController,
   sendRegisterVerificationLinkController,
   verifyRegisterVerificationLinkController,
-} from "../controllers/users/user.controller";
+} from "../controllers/users/auth.controller";
 import {
+  loginAuthValidation,
   sendRegisterVerificationLinkValidation,
   verifyRegisterVerificationLinkValidation,
 } from "../validation/user/auth.joi";
@@ -23,5 +25,7 @@ authRoutes
     verifyRegisterVerificationLinkValidation,
     verifyRegisterVerificationLinkController,
   );
+
+authRoutes.route("/login").post(loginAuthValidation, loginAuthController);
 
 export default authRoutes;

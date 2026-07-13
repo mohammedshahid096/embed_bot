@@ -95,7 +95,7 @@ export const createRefreshToken = async (userId: string): Promise<string> => {
   };
 
   const signConfig: SignOptions = {
-    expiresIn: config.jwt.ACCESS_TOKEN_KEY_TIME as any,
+    expiresIn: config.jwt.REFRESH_TOKEN_KEY_TIME as any,
   };
 
   return jwt.sign(payload, config.jwt.REFRESH_TOKEN_KEY, signConfig);

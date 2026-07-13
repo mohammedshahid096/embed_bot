@@ -78,7 +78,7 @@ const config: Config = {
 
   cookie: {
     ACCESS_TOKEN_COOKIE_TIME: process.env.ACCESS_TOKEN_COOKIE_TIME || "5", //mins
-    REFRESH_TOKEN_COOKIE_TIME: process.env.REFRESH_TOKEN_COOKIE_TIME || "7", //days
+    REFRESH_TOKEN_COOKIE_TIME: process.env.REFRESH_TOKEN_COOKIE_TIME || "3", //days
   },
 
   chromadb: {

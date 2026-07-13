@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  generateAccessTokenController,
   loginAuthController,
   sendRegisterVerificationLinkController,
   verifyRegisterVerificationLinkController,
@@ -27,5 +28,7 @@ authRoutes
   );
 
 authRoutes.route("/login").post(loginAuthValidation, loginAuthController);
+
+authRoutes.route("/generate-access-token").get(generateAccessTokenController);
 
 export default authRoutes;

@@ -13,6 +13,7 @@ import {
   createAccessToken,
   createRefreshToken,
   createVerificationToken,
+  verifyRefreshToken,
   verifyVerificationToken,
 } from "../../utils/jwt.util";
 import config from "../../config/index.config";
@@ -175,6 +176,47 @@ export const loginAuthController = async (
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "User logged in successfully",
+      data: {
+        accessToken,
+      },
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+export const generateAccessTokenController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { refresh_token } = req.cookies;
+    if (!refresh_token) {
+      return next(
+        httpError.Unauthorized("Invalid Request. Refresh Token not found"),
+      );
+    }
+
+    const decode = await verifyRefreshToken(refresh_token);
+    if (!decode.success || !decode.id) {
+      return next(
+        httpError.Unauthorized("Invalid Request. Refresh Token not found"),
+      );
+    }
+
+    const user = await UserModel.findById(decode?.id).lean();
+    if (!user) {
+      return next(httpError.Unauthorized("User not found"));
+    }
+
+    const accessToken = await createAccessToken(user?._id?.toString());
+
+    sendAccessTokenCookie(res, accessToken);
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Access token generated successfully",
       data: {
         accessToken,
       },

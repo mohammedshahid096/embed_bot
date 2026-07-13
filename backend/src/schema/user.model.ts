@@ -1,7 +1,7 @@
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 import modelConstants from "../constants/model.constant";
 
-export interface UserInterface {
+export interface UserInterface extends Document {
   email: string;
   password: string;
   name: string;
@@ -16,7 +16,7 @@ export interface UserInterface {
 
 const userSchema = new Schema<UserInterface>(
   {
-    name: String,
+    name: { type: String, required: true },
     email: { type: String, unique: true, required: true, index: true },
     password: { type: String, select: false },
     authProvider: {

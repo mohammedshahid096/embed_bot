@@ -2,6 +2,7 @@ import { celebrate, Joi } from "celebrate";
 
 export const sendRegisterVerificationLinkValidation = celebrate({
   body: Joi.object({
+    name: Joi.string().min(3).max(50).required().label("Name"),
     email: Joi.string().email().required().label("Email"),
     password: Joi.string()
       .min(8)

@@ -31,7 +31,7 @@ export const sendRegisterVerificationLinkController = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, password } = req.body as RegisterUserBody;
+    const { email, password, name } = req.body as RegisterUserBody;
 
     const isUserExist = await UserModel.findOne({ email });
     if (isUserExist) {
@@ -61,6 +61,7 @@ export const sendRegisterVerificationLinkController = async (
 
     const cacheVerificationDetails: RedisRegisterUserBody = {
       ...verificationCacheData,
+      name: name,
       email: email,
       password: password,
       count: count + 1,
@@ -119,6 +120,7 @@ export const verifyRegisterVerificationLinkController = async (
     );
 
     const newUser = new UserModel({
+      name: verificationCacheData.name,
       email: verificationCacheData.email,
       password: hashPassword,
       isEmailVerified: true,

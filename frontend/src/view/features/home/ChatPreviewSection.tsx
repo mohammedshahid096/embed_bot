@@ -21,7 +21,9 @@ const demoMessages = [
 ];
 
 function ChatPreviewSection() {
-  const [visibleMessages, setVisibleMessages] = useState<typeof demoMessages>([]);
+  const [visibleMessages, setVisibleMessages] = useState<typeof demoMessages>(
+    [],
+  );
   const [isTyping, setIsTyping] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -36,7 +38,7 @@ function ChatPreviewSection() {
           animateMessages();
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
 
     if (sectionRef.current) {
@@ -94,9 +96,9 @@ function ChatPreviewSection() {
               </span>
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-              Your chatbot instantly understands your website content and provides
-              accurate, contextual responses to visitor queries — 24/7, with zero
-              manual effort.
+              Your chatbot instantly understands your website content and
+              provides accurate, contextual responses to visitor queries — 24/7,
+              with zero manual effort.
             </p>
 
             <ul className="mt-8 space-y-4">
@@ -137,7 +139,9 @@ function ChatPreviewSection() {
                         <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-emerald-400" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">EmbedBot</p>
+                        <p className="text-sm font-medium text-foreground">
+                          EmbedBot
+                        </p>
                         <p className="text-xs text-emerald-400">Online</p>
                       </div>
                     </div>
@@ -150,14 +154,18 @@ function ChatPreviewSection() {
                   </div>
 
                   {/* Messages */}
-                  <div className="h-80 overflow-y-auto px-4 py-4 space-y-3" ref={scrollRef}>
+                  <div
+                    className="h-80 overflow-y-auto px-4 py-4 space-y-3"
+                    ref={scrollRef}
+                  >
                     {/* Welcome message */}
                     <div className="flex gap-2.5">
                       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-blue-500">
                         <Bot className="h-3.5 w-3.5 text-white" />
                       </div>
                       <div className="max-w-[80%] rounded-2xl rounded-tl-md bg-muted/50 px-3.5 py-2.5 text-sm text-foreground">
-                        Hi! 👋 I'm your AI assistant. Ask me anything about this website!
+                        Hi! 👋 I'm your AI assistant. Ask me anything about this
+                        website!
                       </div>
                     </div>
 
@@ -197,9 +205,18 @@ function ChatPreviewSection() {
                         </div>
                         <div className="rounded-2xl rounded-tl-md bg-muted/50 px-4 py-3">
                           <div className="flex gap-1">
-                            <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40" style={{ animationDelay: "0ms" }} />
-                            <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40" style={{ animationDelay: "150ms" }} />
-                            <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40" style={{ animationDelay: "300ms" }} />
+                            <div
+                              className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40"
+                              style={{ animationDelay: "0ms" }}
+                            />
+                            <div
+                              className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40"
+                              style={{ animationDelay: "150ms" }}
+                            />
+                            <div
+                              className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40"
+                              style={{ animationDelay: "300ms" }}
+                            />
                           </div>
                         </div>
                       </div>

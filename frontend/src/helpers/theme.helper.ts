@@ -23,7 +23,7 @@ export const initializeTheme = (): Theme => {
     applyThemeToDOM(savedTheme);
     return savedTheme;
   }
-  
+
   // Default to dark mode for EmbedBot
   const defaultTheme = "dark";
   setTheme(defaultTheme);
@@ -34,7 +34,7 @@ export const initializeTheme = (): Theme => {
 export const applyThemeToDOM = (theme: Theme) => {
   if (typeof window === "undefined") return;
   const root = window.document.documentElement;
-  
+
   if (theme === "dark") {
     root.classList.add("dark");
   } else {

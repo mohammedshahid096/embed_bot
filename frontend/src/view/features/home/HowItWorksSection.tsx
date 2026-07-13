@@ -1,4 +1,4 @@
-import { FileText, Globe, Upload, ArrowRight, Cpu, MessageCircle } from "lucide-react";
+import { Upload, ArrowRight, Cpu, MessageCircle } from "lucide-react";
 
 const steps = [
   {
@@ -7,7 +7,11 @@ const steps = [
     title: "Add Your Data",
     description:
       "Upload documents, PDFs, or paste URLs. Our crawler indexes your website content automatically.",
-    details: ["PDF & document upload", "Website crawling", "Custom text datasets"],
+    details: [
+      "PDF & document upload",
+      "Website crawling",
+      "Custom text datasets",
+    ],
     gradient: "from-violet-600 to-purple-600",
   },
   {
@@ -16,7 +20,11 @@ const steps = [
     title: "AI Processes & Embeds",
     description:
       "Your data is chunked, embedded, and stored in ChromaDB for semantic search and retrieval.",
-    details: ["Text chunking & embedding", "ChromaDB vector storage", "Semantic indexing"],
+    details: [
+      "Text chunking & embedding",
+      "ChromaDB vector storage",
+      "Semantic indexing",
+    ],
     gradient: "from-blue-600 to-cyan-600",
   },
   {
@@ -25,7 +33,11 @@ const steps = [
     title: "Deploy & Chat",
     description:
       "Paste a single script tag on your site. Your chatbot is live and ready to answer questions.",
-    details: ["One-line embed script", "Real-time conversations", "Context-aware answers"],
+    details: [
+      "One-line embed script",
+      "Real-time conversations",
+      "Context-aware answers",
+    ],
     gradient: "from-emerald-600 to-teal-600",
   },
 ];
@@ -51,7 +63,8 @@ function HowItWorksSection() {
             </span>
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            From raw data to a live chatbot in minutes — no ML expertise required.
+            From raw data to a live chatbot in minutes — no ML expertise
+            required.
           </p>
         </div>
 
@@ -76,7 +89,9 @@ function HowItWorksSection() {
                   <item.icon className="h-6 w-6 text-white" />
                 </div>
 
-                <h3 className="text-xl font-semibold text-foreground">{item.title}</h3>
+                <h3 className="text-xl font-semibold text-foreground">
+                  {item.title}
+                </h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {item.description}
                 </p>
@@ -84,7 +99,10 @@ function HowItWorksSection() {
                 {/* Detail list */}
                 <ul className="mt-5 space-y-2">
                   {item.details.map((detail) => (
-                    <li key={detail} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <li
+                      key={detail}
+                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                    >
                       <ArrowRight className="h-3 w-3 text-violet-400" />
                       {detail}
                     </li>

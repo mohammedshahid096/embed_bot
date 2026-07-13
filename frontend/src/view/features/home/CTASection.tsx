@@ -26,8 +26,8 @@ function CTASection() {
           </h2>
 
           <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-            Create your first chatbot in under 5 minutes. No credit card required.
-            Start with our generous free tier.
+            Create your first chatbot in under 5 minutes. No credit card
+            required. Start with our generous free tier.
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

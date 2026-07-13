@@ -83,8 +83,8 @@ function FeaturesSection() {
             </span>
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            From data ingestion to deployment — a complete platform for building AI chatbots
-            that actually understand your business.
+            From data ingestion to deployment — a complete platform for building
+            AI chatbots that actually understand your business.
           </p>
         </div>
 

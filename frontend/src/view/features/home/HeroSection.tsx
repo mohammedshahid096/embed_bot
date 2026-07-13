@@ -50,8 +50,9 @@ function HeroSection() {
 
         {/* Subheading */}
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-          Train your chatbot with your own data — documents, website crawling, or custom datasets.
-          Just paste one script tag, and your AI assistant is live.
+          Train your chatbot with your own data — documents, website crawling,
+          or custom datasets. Just paste one script tag, and your AI assistant
+          is live.
         </p>
 
         {/* CTA Buttons */}
@@ -88,7 +89,9 @@ function HeroSection() {
                 <div className="h-3 w-3 rounded-full bg-yellow-500/60" />
                 <div className="h-3 w-3 rounded-full bg-green-500/60" />
               </div>
-              <span className="text-xs text-muted-foreground/60">index.html</span>
+              <span className="text-xs text-muted-foreground/60">
+                index.html
+              </span>
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-muted-foreground transition-all hover:bg-white/10 hover:text-foreground"
@@ -112,7 +115,9 @@ function HeroSection() {
                 <span className="text-blue-400">script</span>{" "}
                 <span className="text-violet-400">src</span>
                 <span className="text-muted-foreground/50">=</span>
-                <span className="text-emerald-400">"https://cdn.embedbot.ai/widget.js"</span>{" "}
+                <span className="text-emerald-400">
+                  "https://cdn.embedbot.ai/widget.js"
+                </span>{" "}
                 <span className="text-violet-400">data-bot-id</span>
                 <span className="text-muted-foreground/50">=</span>
                 <span className="text-amber-400">"YOUR_BOT_ID"</span>

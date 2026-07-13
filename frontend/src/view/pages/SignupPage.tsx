@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff, User, Mail, Lock, ArrowRight, Sparkles } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  User,
+  Mail,
+  Lock,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -197,7 +205,9 @@ function SignupPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -319,11 +329,17 @@ function SignupPage() {
 
         <p className="mt-6 text-center text-xs text-muted-foreground/60">
           By creating an account, you agree to our{" "}
-          <a href="#" className="underline underline-offset-2 hover:text-muted-foreground">
+          <a
+            href="#"
+            className="underline underline-offset-2 hover:text-muted-foreground"
+          >
             Terms of Service
           </a>{" "}
           and{" "}
-          <a href="#" className="underline underline-offset-2 hover:text-muted-foreground">
+          <a
+            href="#"
+            className="underline underline-offset-2 hover:text-muted-foreground"
+          >
             Privacy Policy
           </a>
         </p>

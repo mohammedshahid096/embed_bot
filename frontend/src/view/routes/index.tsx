@@ -1,5 +1,6 @@
 import React from "react";
 import SignupPage from "../pages/SignupPage";
+import HomePage from "../pages/HomePage";
 
 export interface RouteConfig {
   path: string;
@@ -9,7 +10,7 @@ export interface RouteConfig {
 export const routes: RouteConfig[] = [
   {
     path: "/",
-    element: <SignupPage />,
+    element: <HomePage />,
   },
   {
     path: "/signup",

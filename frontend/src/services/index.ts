@@ -2,6 +2,7 @@ import axios from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import { AxiosConfig, RequestMethodInstance } from "./axiosInstance";
 import API_URLS from "./config";
+import { removeSecondaryAccessToken } from "@/helpers/cookie.helper";
 
 // Define access point keys based on API_URLS
 type AccessPoint = "server";
@@ -186,6 +187,92 @@ const Service = {
     }
   },
 
+  fetchPostAuth: async <T = any, B = any>(
+    url: string,
+    body: B,
+    token?: string,
+    contentType: ContentType = "json",
+    accessPoint: AccessPoint = "server",
+  ): Promise<ServiceResponse<T>> => {
+    try {
+      const endpoint = ApiUrlMapper[accessPoint] + url;
+      const headers = handleHeaders(token, contentType);
+      const response = await apiFetch.intercepterPostMethod<T, B>(
+        endpoint,
+        body,
+        headers,
+      );
+      return processResponse(response);
+    } catch (error: any) {
+      onFailure("network", url);
+      return processResponse(error?.response || error);
+    }
+  },
+
+  fetchPutAuth: async <T = any, B = any>(
+    url: string,
+    body: B,
+    token?: string,
+    contentType: ContentType = "json",
+    accessPoint: AccessPoint = "server",
+  ): Promise<ServiceResponse<T>> => {
+    try {
+      const endpoint = ApiUrlMapper[accessPoint] + url;
+      const headers = handleHeaders(token, contentType);
+      const response = await apiFetch.intercepterPutMethod<T, B>(
+        endpoint,
+        body,
+        headers,
+      );
+      return processResponse(response);
+    } catch (error: any) {
+      onFailure("network", url);
+      return processResponse(error?.response || error);
+    }
+  },
+
+  fetchPatchAuth: async <T = any, B = any>(
+    url: string,
+    body: B,
+    token?: string,
+    contentType: ContentType = "json",
+    accessPoint: AccessPoint = "server",
+  ): Promise<ServiceResponse<T>> => {
+    try {
+      const endpoint = ApiUrlMapper[accessPoint] + url;
+      const headers = handleHeaders(token, contentType);
+      const response = await apiFetch.intercepterPatchMethod<T, B>(
+        endpoint,
+        body,
+        headers,
+      );
+      return processResponse(response);
+    } catch (error: any) {
+      onFailure("network", url);
+      return processResponse(error?.response || error);
+    }
+  },
+
+  fetchDeleteAuth: async <T = any>(
+    url: string,
+    token?: string,
+    contentType: ContentType = "json",
+    accessPoint: AccessPoint = "server",
+  ): Promise<ServiceResponse<T>> => {
+    try {
+      const endpoint = ApiUrlMapper[accessPoint] + url;
+      const headers = handleHeaders(token, contentType);
+      const response = await apiFetch.intercepterDeleteMethod<T>(
+        endpoint,
+        headers,
+      );
+      return processResponse(response);
+    } catch (error: any) {
+      onFailure("network", url);
+      return processResponse(error?.response || error);
+    }
+  },
+
   cancelAllRequests: (): void => {
     apiFetch.cancelAllRequests();
   },
@@ -212,7 +299,8 @@ const onFailure = async (res: string, url: string): Promise<void> => {
  */
 const onUserKickedOut = async (): Promise<void> => {
   localStorage.clear();
-  // window.location.href = "/";
+  removeSecondaryAccessToken();
+  window.location.href = "/";
 };
 
 export default Service;

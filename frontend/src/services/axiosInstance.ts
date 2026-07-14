@@ -213,4 +213,55 @@ export class RequestMethodInstance {
     cleanup();
     return response;
   }
+
+  async intercepterPostMethod<T = any, B = any>(
+    url: string,
+    body?: B,
+    headers?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    const controller = new AbortController();
+    const config = { ...headers, signal: controller.signal };
+    const cleanup = this.registerRequest(url, "POST", controller);
+    const response = await axiosInstance.post<T>(url, body, config);
+    cleanup();
+    return response;
+  }
+
+  async intercepterPutMethod<T = any, B = any>(
+    url: string,
+    body?: B,
+    headers?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    const controller = new AbortController();
+    const config = { ...headers, signal: controller.signal };
+    const cleanup = this.registerRequest(url, "PUT", controller);
+    const response = await axiosInstance.put<T>(url, body, config);
+    cleanup();
+    return response;
+  }
+
+  async intercepterPatchMethod<T = any, B = any>(
+    url: string,
+    body?: B,
+    headers?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    const controller = new AbortController();
+    const config = { ...headers, signal: controller.signal };
+    const cleanup = this.registerRequest(url, "PATCH", controller);
+    const response = await axiosInstance.patch<T>(url, body, config);
+    cleanup();
+    return response;
+  }
+
+  async intercepterDeleteMethod<T = any>(
+    url: string,
+    headers?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    const controller = new AbortController();
+    const config = { ...headers, signal: controller.signal };
+    const cleanup = this.registerRequest(url, "DELETE", controller);
+    const response = await axiosInstance.delete<T>(url, config);
+    cleanup();
+    return response;
+  }
 }

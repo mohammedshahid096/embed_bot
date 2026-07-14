@@ -7,8 +7,8 @@ export const sendAccessTokenCookie = (res: Response, accessToken: string) => {
       Date.now() + parseInt(config.cookie.ACCESS_TOKEN_COOKIE_TIME) * 60 * 1000,
     ), // for min
     sameSite: "none" as const,
-    secure: false, //prod true
-    httpOnly: false, // prod true
+    secure: true, //prod true
+    httpOnly: true, // prod true
   };
 
   res.cookie("access_token", accessToken, AccessTokenOptions);
@@ -21,8 +21,8 @@ export const sendRefreshTokenCookie = (res: Response, refreshToken: string) => {
         parseInt(config.cookie.REFRESH_TOKEN_COOKIE_TIME) * 24 * 60 * 60 * 1000,
     ), // for days
     sameSite: "none" as const,
-    secure: false, //prod true
-    httpOnly: false, // prod true
+    secure: true, //prod true
+    httpOnly: true, // prod true
   };
 
   res.cookie("refresh_token", refreshToken, RefreshTokenOptions);

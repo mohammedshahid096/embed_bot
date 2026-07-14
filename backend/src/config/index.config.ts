@@ -52,7 +52,9 @@ const config: Config = {
     (process.env.DEVELOPMENT_MODE as Environment) || "development",
 
   cors: {
-    CORS_ALLOW_ORIGINS: JSON.parse(process.env.ALLOW_ORIGINS_ACCESS || "[]"),
+    CORS_ALLOW_ORIGINS: process.env.ALLOW_ORIGINS_ACCESS
+      ? JSON.parse(process.env.ALLOW_ORIGINS_ACCESS || "[]")
+      : ["http://localhost:5173", "http://localhost:3000"],
   },
 
   mongodb: {

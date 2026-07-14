@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +14,11 @@ import {
 } from "@/components/ui/card";
 import { loginAuthApi } from "@/api/auth.api";
 import { toast } from "sonner";
+import { setSecondaryAccessToken } from "@/helpers/cookie.helper";
+import { setLoginToken } from "@/helpers/localstorage.helper";
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -60,6 +63,11 @@ function LoginPage() {
     });
     if (response[0]) {
       toast.success(response[1].message);
+      const token = response[1]?.data?.accessToken;
+      setSecondaryAccessToken(token);
+      setLoginToken(token);
+
+      navigate("/dashboard");
     } else if (response[1]?.message === "Invalid Email or Password") {
       setErrors({
         email: "Invalid Email or Password",

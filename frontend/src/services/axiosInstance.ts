@@ -4,7 +4,7 @@ import {
   removeSecondaryAccessToken,
   setSecondaryAccessToken,
 } from "@/helpers/cookie.helper";
-import { getLoginToken, setLoginToken } from "@/helpers/localstorage.helper";
+import { removeLoginToken, setLoginToken } from "@/helpers/localstorage.helper";
 import axios from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 
@@ -26,10 +26,11 @@ axiosInstance.interceptors.request.use(async (res) => {
   } catch (error: any) {
     if (error.response?.data?.statusCode === 401) {
       removeSecondaryAccessToken();
+      removeLoginToken();
       let currentPath = window.location.pathname;
-      let isLoginTokenExist = getLoginToken();
-      if (currentPath !== "/" && !isLoginTokenExist) {
+      if (currentPath !== "/") {
         window.location.href = "/";
+        return Promise.reject(error);
       }
     } else {
       return Promise.reject(error);

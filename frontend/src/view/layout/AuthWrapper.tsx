@@ -19,7 +19,7 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
   const userProfile = null;
 
   useEffect(() => {
-    const token = true || checkAuth();
+    const token = checkAuth();
     if (token && !userProfile) {
       fetchMyProfileDetails();
     }

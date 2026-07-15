@@ -3,6 +3,7 @@ import SignupPage from "../pages/auth/SignupPage";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterVerificationPage from "../pages/auth/RegisterVerificationPage";
+import CompanyDetails from "../pages/onboard/CompanyDetails";
 import ClientDashboardPage from "../pages/client/ClientDashboardPage";
 import AuthWrapper from "../layout/AuthWrapper";
 
@@ -27,6 +28,14 @@ export const routes: RouteConfig[] = [
   {
     path: "/auth/verification",
     element: <RegisterVerificationPage />,
+  },
+  {
+    path: "/onboard/organisation-details",
+    element: (
+      <AuthWrapper roles={["client"]}>
+        <CompanyDetails />
+      </AuthWrapper>
+    ),
   },
   {
     path: "/dashboard",

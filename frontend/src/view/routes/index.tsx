@@ -1,7 +1,7 @@
 import React from "react";
-import SignupPage from "../pages/SignupPage";
+import SignupPage from "../pages/auth/SignupPage";
 import HomePage from "../pages/HomePage";
-import LoginPage from "../pages/LoginPage";
+import LoginPage from "../pages/auth/LoginPage";
 import ClientDashboardPage from "../pages/client/ClientDashboardPage";
 import AuthWrapper from "../layout/AuthWrapper";
 

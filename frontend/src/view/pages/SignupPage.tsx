@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Eye,
   EyeOff,
@@ -8,6 +8,9 @@ import {
   Lock,
   ArrowRight,
   Sparkles,
+  Loader2,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,10 +23,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { registerAuthApi } from "@/api/auth.api";
+import { registerAuthApi, checkEmailAvailabilityAuthApi } from "@/api/auth.api";
 import { toast } from "sonner";
 
 function SignupPage() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,6 +38,60 @@ function SignupPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<
+    "idle" | "checking" | "available" | "taken"
+  >("idle");
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced email availability check
+  useEffect(() => {
+    const email = formData.email.trim();
+
+    // Reset if empty or invalid format
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailStatus("idle");
+      return;
+    }
+
+    // Clear previous timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    setEmailStatus("checking");
+
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        const response = await checkEmailAvailabilityAuthApi(email);
+        if (response[0] && response[1]?.data?.isEmailAvailable) {
+          setEmailStatus("available");
+          // Clear email error if it was "taken"
+          setErrors((prev) => {
+            if (prev.email === "This email is already taken") {
+              const next = { ...prev };
+              delete next.email;
+              return next;
+            }
+            return prev;
+          });
+        } else {
+          setEmailStatus("taken");
+          setErrors((prev) => ({
+            ...prev,
+            email: "This email is already taken",
+          }));
+        }
+      } catch {
+        setEmailStatus("idle");
+      }
+    }, 500);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [formData.email]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -79,8 +137,12 @@ function SignupPage() {
       password: formData.password,
     });
     setIsLoading(false);
-    if (response[1]?.statusCode === 201) {
+    if (response[1]?.statusCode === 200) {
       toast.success(response[1].message);
+      setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+      setErrors({});
+      setEmailStatus("idle");
+      navigate("/login");
     } else {
       toast.error(response[1]?.message);
     }
@@ -184,13 +246,34 @@ function SignupPage() {
                     placeholder="john@example.com"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`h-10 pl-9 ${errors.email ? "border-destructive ring-destructive/20" : ""}`}
+                    className={`h-10 pl-9 pr-10 ${
+                      errors.email
+                        ? "border-destructive ring-destructive/20"
+                        : emailStatus === "available"
+                          ? "border-emerald-500/50 ring-emerald-500/20"
+                          : ""
+                    }`}
                     aria-invalid={!!errors.email}
                   />
+                  {/* Email status indicator */}
+                  {emailStatus === "checking" && (
+                    <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+                  )}
+                  {emailStatus === "available" && (
+                    <CheckCircle2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500" />
+                  )}
+                  {emailStatus === "taken" && (
+                    <XCircle className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-destructive" />
+                  )}
                 </div>
                 {errors.email && (
                   <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">
                     {errors.email}
+                  </p>
+                )}
+                {emailStatus === "available" && !errors.email && (
+                  <p className="text-xs text-emerald-500 animate-in fade-in slide-in-from-top-1">
+                    Email is available
                   </p>
                 )}
               </div>
@@ -308,7 +391,11 @@ function SignupPage() {
                 type="submit"
                 size="lg"
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/25 transition-all duration-300 hover:from-purple-500 hover:to-blue-500 hover:shadow-purple-500/40 active:scale-[0.98]"
-                disabled={isLoading}
+                disabled={
+                  isLoading ||
+                  emailStatus === "taken" ||
+                  emailStatus === "checking"
+                }
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">

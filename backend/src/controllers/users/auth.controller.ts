@@ -130,12 +130,6 @@ export const verifyRegisterVerificationLinkController = async (
     await newUser.save();
     await redisService.deleteRedisKey(verificationCacheData?.email);
 
-    const accessToken = await createAccessToken(newUser?._id?.toString());
-    const refreshToken = await createRefreshToken(newUser?._id?.toString());
-
-    sendAccessTokenCookie(res, accessToken);
-    sendRefreshTokenCookie(res, refreshToken);
-
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 201,
       message: "User registered successfully",
@@ -167,6 +161,8 @@ export const loginAuthController = async (
       return next(httpError.BadRequest("Invalid Email or Password"));
     }
 
+    const isOnboardingCompleted = user?.organisationId ? true : false;
+
     const accessToken = await createAccessToken(user?._id?.toString());
     const refreshToken = await createRefreshToken(user?._id?.toString());
 
@@ -178,6 +174,7 @@ export const loginAuthController = async (
       message: "User logged in successfully",
       data: {
         accessToken,
+        isOnboardingCompleted,
       },
     });
   } catch (error) {

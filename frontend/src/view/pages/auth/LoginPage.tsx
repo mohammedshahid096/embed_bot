@@ -67,7 +67,12 @@ function LoginPage() {
       setSecondaryAccessToken(token);
       setLoginToken(token);
 
-      navigate("/dashboard");
+      let isOnboardingCompleted = response[1]?.data?.isOnboardingCompleted;
+      if (isOnboardingCompleted) {
+        navigate("/dashboard");
+      } else {
+        navigate("/onboard/organisation-details");
+      }
     } else if (response[1]?.message === "Invalid Email or Password") {
       setErrors({
         email: "Invalid Email or Password",

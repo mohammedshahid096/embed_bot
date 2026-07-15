@@ -73,7 +73,7 @@ function RegisterVerificationPage() {
 
         // Redirect to onboard after 2 seconds
         setTimeout(() => {
-          navigate("/onboard/organisation-details");
+          navigate("/login");
         }, 2000);
       } else {
         setStatus("error");

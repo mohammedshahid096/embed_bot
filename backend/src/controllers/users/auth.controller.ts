@@ -71,7 +71,7 @@ export const sendRegisterVerificationLinkController = async (
     };
 
     // Construct verification link
-    const verificationLink = `${config.hosts.CLIENT_HOST_URL}/signup/verify-email?token=${verificationToken}`;
+    const verificationLink = `${config.hosts.CLIENT_HOST_URL}/auth/verification?token=${verificationToken}`;
     console.log(verificationLink);
 
     await redisService.setRedisJSON(email, cacheVerificationDetails);

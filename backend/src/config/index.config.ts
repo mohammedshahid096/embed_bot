@@ -90,7 +90,7 @@ const config: Config = {
   },
 
   hosts: {
-    CLIENT_HOST_URL: "http://localhost:3000",
+    CLIENT_HOST_URL: "http://localhost:5173",
   },
 };
 

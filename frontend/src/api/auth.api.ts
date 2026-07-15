@@ -29,3 +29,17 @@ export const getAccessTokenFromRefreshTokenAuthApi = async () => {
   );
   return response;
 };
+
+export const checkRegisterVerificationLinkAuthApi = async (token: string) => {
+  const response = await Service.fetchGet(
+    `/auth/register/verify/check-token-validity?token=${token}`,
+  );
+  return response;
+};
+
+export const verifyRegisterVerificationLinkAuthApi = async (token: string) => {
+  const response = await Service.fetchGet(
+    `/auth/register/verify?token=${token}`,
+  );
+  return response;
+};

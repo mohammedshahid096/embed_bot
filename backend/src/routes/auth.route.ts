@@ -5,6 +5,7 @@ import {
   sendRegisterVerificationLinkController,
   verifyRegisterVerificationLinkController,
   checkEmailExistenceController,
+  checkRegisterVerificationLinkController,
 } from "../controllers/users/auth.controller";
 import {
   loginAuthValidation,
@@ -31,6 +32,10 @@ authRoutes
 authRoutes
   .route("/register/check-email-availability")
   .get(checkEmailAvailabilityValidation, checkEmailExistenceController);
+
+authRoutes
+  .route("/register/verify/check-token-validity")
+  .get(checkRegisterVerificationLinkController);
 
 authRoutes.route("/login").post(loginAuthValidation, loginAuthController);
 

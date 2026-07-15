@@ -247,3 +247,37 @@ export const checkEmailExistenceController = async (
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
+
+export const checkRegisterVerificationLinkController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { token } = req.query as { token: string };
+
+    let isTokenValid = true;
+    const verfifyResult = await verifyVerificationToken(token ?? "");
+
+    if (!verfifyResult?.success) {
+      isTokenValid = false;
+    }
+    const redisService = new RedisServiceClass();
+    const verificationCacheData = (await redisService.getRedisJSON(
+      verfifyResult?.id as string,
+    )) as RedisRegisterUserBody;
+    if (!verificationCacheData) {
+      isTokenValid = false;
+    }
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Verification link checked successfully",
+      data: {
+        isTokenValid,
+      },
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};

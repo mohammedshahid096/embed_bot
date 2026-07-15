@@ -46,3 +46,9 @@ export const loginAuthValidation = celebrate({
       }),
   }).required(),
 });
+
+export const checkEmailAvailabilityValidation = celebrate({
+  query: Joi.object({
+    email: Joi.string().email().required().label("Email"),
+  }).required(),
+});

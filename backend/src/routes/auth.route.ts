@@ -4,11 +4,13 @@ import {
   loginAuthController,
   sendRegisterVerificationLinkController,
   verifyRegisterVerificationLinkController,
+  checkEmailExistenceController,
 } from "../controllers/users/auth.controller";
 import {
   loginAuthValidation,
   sendRegisterVerificationLinkValidation,
   verifyRegisterVerificationLinkValidation,
+  checkEmailAvailabilityValidation,
 } from "../validation/user/auth.joi";
 
 const authRoutes = Router();
@@ -26,6 +28,9 @@ authRoutes
     verifyRegisterVerificationLinkValidation,
     verifyRegisterVerificationLinkController,
   );
+authRoutes
+  .route("/register/check-email-availability")
+  .get(checkEmailAvailabilityValidation, checkEmailExistenceController);
 
 authRoutes.route("/login").post(loginAuthValidation, loginAuthController);
 

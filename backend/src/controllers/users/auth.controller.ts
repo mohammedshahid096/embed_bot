@@ -225,3 +225,25 @@ export const generateAccessTokenController = async (
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
+
+export const checkEmailExistenceController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.query as { email: string };
+
+    const user = await UserModel.findOne({ email }).select("_id").lean();
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Email availability checked successfully",
+      data: {
+        isEmailAvailable: !user,
+      },
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};

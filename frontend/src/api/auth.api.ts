@@ -8,6 +8,13 @@ export const loginAuthApi = async (body: LoginAuthBody) => {
   return response;
 };
 
+export const checkEmailAvailabilityAuthApi = async (email: string) => {
+  const response = await Service.fetchGet(
+    `/auth/register/check-email-availability?email=${email}`,
+  );
+  return response;
+};
+
 export const registerAuthApi = async (body: RegisterUserBody) => {
   const response = await Service.fetchPost("/auth/register", body);
   return response;

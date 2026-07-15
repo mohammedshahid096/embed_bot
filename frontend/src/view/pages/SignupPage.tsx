@@ -20,6 +20,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { registerAuthApi } from "@/api/auth.api";
+import { toast } from "sonner";
 
 function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -71,10 +73,17 @@ function SignupPage() {
     e.preventDefault();
     if (!validate()) return;
     setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const response = await registerAuthApi({
+      email: formData.email,
+      name: formData.name,
+      password: formData.password,
+    });
     setIsLoading(false);
-    console.log("Signup data:", formData);
+    if (response[1]?.statusCode === 201) {
+      toast.success(response[1].message);
+    } else {
+      toast.error(response[1]?.message);
+    }
   };
 
   const getPasswordStrength = (password: string) => {

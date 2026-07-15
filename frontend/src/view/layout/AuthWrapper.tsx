@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import React, { useEffect, useState, memo } from "react";
 import useAuth from "@/hooks/useAuth";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Service from "@/services";
 import useLogout from "@/hooks/useLogout";
 import { getMyUserProfileApi } from "@/api/user.api";
@@ -14,6 +14,7 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
   const checkAuth = useAuth();
   const location = useLocation();
   const logoutFunction = useLogout();
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
   const userProfile = null;
@@ -49,6 +50,10 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
       logoutFunction();
     } else {
       setIsLoading(false);
+      const userDetails = response[1]?.data;
+      if (!userDetails?.organisationId) {
+        navigate("/onboard/organisation-details");
+      }
     }
   };
 

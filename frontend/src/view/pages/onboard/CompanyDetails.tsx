@@ -18,6 +18,7 @@ import FormInput from "@/components/custom/FormInput";
 import FormSelect from "@/components/custom/FormSelect";
 import FormTextarea from "@/components/custom/FormTextarea";
 import { toast } from "sonner";
+import { createOrganisationDetailsApi } from "@/api/onboard.api";
 
 // Zod Validation Schema
 const schema = z.object({
@@ -133,12 +134,14 @@ function CompanyDetails() {
       };
 
       console.log("Submitting Onboarding Payload:", payload);
-      // Simulate API Submission
-      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      toast.success("Organisation details saved successfully!");
-      // Redirect to next step or dashboard
-      navigate("/dashboard");
+      const response = await createOrganisationDetailsApi(payload);
+      if (response[2] === 201) {
+        toast.success("Organisation details saved successfully!");
+        navigate("/onboard/website-urls");
+      } else {
+        toast.error("Failed to save organisation details. Please try again.");
+      }
     } catch (error) {
       toast.error("Failed to save organisation details. Please try again.");
     } finally {

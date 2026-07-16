@@ -12,8 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@langchain/community": "^1.1.29",
+    "@langchain/core": "^1.2.3",
     "bcrypt": "^6.0.0",
     "celebrate": "^15.0.3",
+    "cheerio": "^1.2.0",
     "colorette": "^2.0.20",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
@@ -24,7 +27,9 @@
     "helmet": "^8.2.0",
     "http-errors": "^2.0.1",
     "ioredis": "^5.11.1",
+    "jsdom": "^29.1.1",
     "jsonwebtoken": "^9.0.3",
+    "langchain": "^1.5.3",
     "mongoose": "^9.7.4"
   },
   "devDependencies": {
@@ -33,6 +38,7 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jsdom": "^28.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.1.1",
     "tsx": "^4.23.0",

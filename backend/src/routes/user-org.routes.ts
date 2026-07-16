@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Authentication } from "../middlewares/auth.middleware";
 import {
+  extractUserOrganisationWebsiteUrlsController,
   getUserOrganisationDetailsController,
   onBoardingOrganisationController,
 } from "../controllers/organisation/user-org.controller";
@@ -19,4 +20,8 @@ userOrganisationRoutes
 userOrganisationRoutes
   .route("/details")
   .get(Authentication, getUserOrganisationDetailsController);
+
+userOrganisationRoutes
+  .route("/website-urls")
+  .get(extractUserOrganisationWebsiteUrlsController);
 export default userOrganisationRoutes;

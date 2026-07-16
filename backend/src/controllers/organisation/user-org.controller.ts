@@ -5,6 +5,7 @@ import errorHandling, { AppError } from "../../utils/errorHandling.util";
 import responseHandlingUtil from "../../utils/responseHandling.util";
 import { OnBoardOrganisationBody } from "../../types/organisation/index.types";
 import UserModel from "../../schema/user.model";
+import { CheerioWebsiteUrls } from "../../services/cheerio.service";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -48,6 +49,27 @@ export const getUserOrganisationDetailsController = async (
       statusCode: 200,
       message: "Organisation Details Fetched Successfully",
       data: orgDetails,
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+export const extractUserOrganisationWebsiteUrlsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const cheerioWebsiteUrlService = new CheerioWebsiteUrls({
+      baseUrl: "https://www.shahidnagodriya.online",
+    });
+    const websiteUrls = await cheerioWebsiteUrlService.getWebsiteUrls();
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Website urls fetched successfully",
+      data: websiteUrls,
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

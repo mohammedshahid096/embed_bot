@@ -30,6 +30,7 @@ export const Authentication = async (
       _id: userExist?._id,
       email: userExist?.email,
       name: userExist?.name,
+      organisationId: userExist?.organisationId,
     };
     console.log(`name : ${userExist.name} email: ${userExist.email}`);
     next();

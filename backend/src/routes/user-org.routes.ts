@@ -6,6 +6,7 @@ import {
   onBoardingOrganisationController,
 } from "../controllers/organisation/user-org.controller";
 import { onBoardingOrganisationValidation } from "../validation/organisation/user-org.joi";
+import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
 
 const userOrganisationRoutes = Router();
 
@@ -22,6 +23,10 @@ userOrganisationRoutes
   .get(Authentication, getUserOrganisationDetailsController);
 
 userOrganisationRoutes
-  .route("/website-urls")
-  .get(extractUserOrganisationWebsiteUrlsController);
+  .route("/extract-website-urls")
+  .get(
+    Authentication,
+    OrganisationMiddleware,
+    extractUserOrganisationWebsiteUrlsController,
+  );
 export default userOrganisationRoutes;

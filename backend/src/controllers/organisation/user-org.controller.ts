@@ -61,15 +61,17 @@ export const extractUserOrganisationWebsiteUrlsController = async (
   next: NextFunction,
 ) => {
   try {
+    const organisationWebsite = req?.organisation?.website;
+
     const cheerioWebsiteUrlService = new CheerioWebsiteUrls({
-      baseUrl: "https://www.shahidnagodriya.online",
+      baseUrl: organisationWebsite!,
     });
     const websiteUrls = await cheerioWebsiteUrlService.getWebsiteUrls();
 
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "Website urls fetched successfully",
-      data: websiteUrls,
+      data: websiteUrls ?? [],
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

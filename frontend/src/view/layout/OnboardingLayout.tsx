@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from "react";
+import Context from "@/context/context";
+import { useContext, useEffect, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface OnboardingLayoutInitialProps {
@@ -7,10 +8,15 @@ interface OnboardingLayoutInitialProps {
 
 const OnboardingLayout = ({ children }: OnboardingLayoutInitialProps) => {
   const navigate = useNavigate();
+  const {
+    userProfileState: { profileDetails },
+  } = useContext(Context);
 
   useEffect(() => {
-    // navigate("/");
-  }, []);
+    if (profileDetails?.organisationId) {
+      navigate("/");
+    }
+  }, [profileDetails]);
   return children;
 };
 

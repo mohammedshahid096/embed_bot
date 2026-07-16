@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, memo, useContext } from "react";
 import useAuth from "@/hooks/useAuth";
 import { useLocation, useNavigate } from "react-router-dom";
 import Service from "@/services";
 import useLogout from "@/hooks/useLogout";
-import { getMyUserProfileApi } from "@/api/user.api";
+import Context from "@/context/context";
 
 interface AuthWrapperType {
   roles: Array<string>;
@@ -15,25 +15,27 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
   const location = useLocation();
   const logoutFunction = useLogout();
   const navigate = useNavigate();
+  const {
+    userProfileState: { getUserprofileDetailsAction, profileDetails },
+  } = useContext(Context);
 
   const [isLoading, setIsLoading] = useState(true);
-  const userProfile = null;
 
   useEffect(() => {
     const token = checkAuth();
-    if (token && !userProfile) {
+    if (token && !profileDetails) {
       fetchMyProfileDetails();
     }
   }, []);
 
   useEffect(() => {
-    if (userProfile) {
+    if (profileDetails) {
       setIsLoading(false);
       // if (!roles.includes(userProfile?.roleName)) {
       // logoutFunction();
       // }
     }
-  }, [userProfile, roles]);
+  }, [profileDetails, roles]);
 
   useEffect(() => {
     // Return cleanup function that will execute when route changes
@@ -45,7 +47,7 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
   }, [location.pathname, isLoading]);
 
   const fetchMyProfileDetails = async () => {
-    const response = await getMyUserProfileApi();
+    const response = await getUserprofileDetailsAction();
     if (!response[1]?.success) {
       logoutFunction();
     } else {

@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { routes, type RouteConfig } from "../src/view/routes";
 import { Toaster } from "@/components/ui/sonner";
+import ContextProvider from "./context/ContextProvider";
 
 function App() {
   return (
-    <>
+    <ContextProvider>
       <BrowserRouter>
         <Routes>
           <Route>
@@ -17,7 +18,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster />
-    </>
+    </ContextProvider>
   );
 }
 

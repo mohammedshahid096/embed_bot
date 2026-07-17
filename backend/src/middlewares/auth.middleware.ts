@@ -40,7 +40,7 @@ export const Authentication = async (
   }
 };
 
-const DevelopmentAuthentication = async (
+export const DevelopmentAuthentication = async (
   req: Request,
   res: Response,
   next: NextFunction,

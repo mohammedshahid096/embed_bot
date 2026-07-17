@@ -6,6 +6,8 @@ interface Config {
   PORT: number | string;
   DEVELOPMENT_MODE: Environment;
 
+  DEVELOPMENT_USER_ID: string | null;
+
   cors: {
     CORS_ALLOW_ORIGINS: string[];
   };
@@ -50,6 +52,8 @@ const config: Config = {
   PORT: process.env.PORT || 8001,
   DEVELOPMENT_MODE:
     (process.env.DEVELOPMENT_MODE as Environment) || "development",
+
+  DEVELOPMENT_USER_ID: process.env.DEVELOPMENT_USER_ID || null,
 
   cors: {
     CORS_ALLOW_ORIGINS: process.env.ALLOW_ORIGINS_ACCESS

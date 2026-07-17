@@ -3,6 +3,7 @@ import httpErrors from "http-errors";
 import errorHandling, { AppError } from "../utils/errorHandling.util";
 import { verifyAccessToken } from "../utils/jwt.util";
 import UserModel from "../schema/user.model";
+import config from "../config/index.config";
 
 export const Authentication = async (
   req: Request,
@@ -36,6 +37,35 @@ export const Authentication = async (
     next();
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+const DevelopmentAuthentication = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = config.DEVELOPMENT_USER_ID;
+    if (!userId)
+      return next(
+        httpErrors.InternalServerError("Development user ID is not set"),
+      );
+    const userExist = await UserModel.findById(userId).lean();
+
+    if (!userExist) return next(httpErrors.NotFound("user not found"));
+
+    req.authUser = {
+      _id: userExist?._id,
+      email: userExist?.email,
+      name: userExist?.name,
+      organisationId: userExist?.organisationId,
+    };
+    console.log(`name : ${userExist.name} email: ${userExist.email}`);
+
+    next();
+  } catch (error) {
+    next(httpErrors.InternalServerError("Internal server error"));
   }
 };
 

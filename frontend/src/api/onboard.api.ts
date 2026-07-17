@@ -9,6 +9,6 @@ export const createOrganisationDetailsApi = async (
 };
 
 export const extractOrganisationWebsiteUrlsApi = async () => {
-  const response = await Service.fetchGet("/organisation/extract-website-urls");
+  const response = await Service.fetchGetAuth("/organisation/extract-website-urls");
   return response;
 };

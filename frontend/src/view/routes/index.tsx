@@ -4,6 +4,7 @@ import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterVerificationPage from "../pages/auth/RegisterVerificationPage";
 import CompanyDetails from "../pages/onboard/CompanyDetails";
+import ExtractWebsiteUrls from "../pages/onboard/ExtractWebsiteUrls";
 import ClientDashboardPage from "../pages/client/ClientDashboardPage";
 import AuthWrapper from "../layout/AuthWrapper";
 
@@ -34,6 +35,14 @@ export const routes: RouteConfig[] = [
     element: (
       <AuthWrapper roles={["client"]}>
         <CompanyDetails />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: "/onboard/website-urls",
+    element: (
+      <AuthWrapper roles={["client"]}>
+        <ExtractWebsiteUrls />
       </AuthWrapper>
     ),
   },

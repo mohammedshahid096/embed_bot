@@ -20,6 +20,7 @@ import FormTextarea from "@/components/custom/FormTextarea";
 import { toast } from "sonner";
 import { createOrganisationDetailsApi } from "@/api/onboard.api";
 import OnboardingLayout from "@/view/layout/OnboardingLayout";
+import OnboardingStepper from "@/view/features/onboarding/OnboardingStepper";
 
 // Zod Validation Schema
 const schema = z.object({
@@ -169,6 +170,9 @@ function CompanyDetails() {
         />
 
         <div className="relative z-10 w-full max-w-2xl">
+          {/* Onboarding Stepper */}
+          <OnboardingStepper />
+
           {/* Logo / Brand */}
           <div className="mb-8 flex flex-col items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 shadow-lg shadow-purple-500/25">

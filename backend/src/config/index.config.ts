@@ -44,6 +44,10 @@ interface Config {
   hosts: {
     CLIENT_HOST_URL: string;
   };
+
+  openRouter: {
+    API_KEY: string;
+  };
 }
 
 dotenv.config();
@@ -95,6 +99,10 @@ const config: Config = {
 
   hosts: {
     CLIENT_HOST_URL: "http://localhost:5173",
+  },
+
+  openRouter: {
+    API_KEY: process.env.OPENROUTER_API_KEY || "",
   },
 };
 

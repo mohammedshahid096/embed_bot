@@ -4,6 +4,7 @@ import {
   extractUserOrganisationWebsiteUrlsController,
   getUserOrganisationDetailsController,
   onBoardingOrganisationController,
+  scrapeWebsitesController,
 } from "../controllers/organisation/user-org.controller";
 import { onBoardingOrganisationValidation } from "../validation/organisation/user-org.joi";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
@@ -29,4 +30,6 @@ userOrganisationRoutes
     OrganisationMiddleware,
     extractUserOrganisationWebsiteUrlsController,
   );
+
+userOrganisationRoutes.route("/scrape-websites").get(scrapeWebsitesController);
 export default userOrganisationRoutes;

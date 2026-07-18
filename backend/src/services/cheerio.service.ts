@@ -1,5 +1,7 @@
 import { SitemapLoader } from "@langchain/community/document_loaders/web/sitemap";
 import { RecursiveUrlLoader } from "@langchain/community/document_loaders/web/recursive_url";
+import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
+import type { CheerioAPI } from "cheerio";
 
 export class CheerioWebsiteUrls {
   baseUrl: string;
@@ -82,4 +84,40 @@ export class CheerioWebsiteUrls {
       return null;
     }
   }
+}
+
+export class CheerioWebsiteScrapping {
+  url: string;
+
+  constructor({ url }: { url: string }) {
+    this.url = url;
+  }
+
+  private cleanContentFunction = (content: string) => {
+    return content
+      .replace(/\n{3,}/g, "\n\n")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  };
+
+  getPageContent = async () => {
+    try {
+      const loader = new CheerioWebBaseLoader(this.url, {
+        selector: "body",
+      });
+
+      const $ = await loader.scrape();
+      $(
+        "script, style, noscript, svg, nav, footer, header, meta,iframe",
+      ).remove();
+      $("*").removeAttr("style").removeAttr("class");
+      let cleanContent = $.text();
+      cleanContent = this.cleanContentFunction(cleanContent);
+
+      return cleanContent;
+    } catch (error) {
+      console.log(error);
+      return "";
+    }
+  };
 }

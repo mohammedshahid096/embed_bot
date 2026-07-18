@@ -5,7 +5,11 @@ import errorHandling, { AppError } from "../../utils/errorHandling.util";
 import responseHandlingUtil from "../../utils/responseHandling.util";
 import { OnBoardOrganisationBody } from "../../types/organisation/index.types";
 import UserModel from "../../schema/user.model";
-import { CheerioWebsiteUrls } from "../../services/cheerio.service";
+import {
+  CheerioWebsiteScrapping,
+  CheerioWebsiteUrls,
+} from "../../services/cheerio.service";
+import OpenRouterService from "../../services/open-router.service";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -72,6 +76,41 @@ export const extractUserOrganisationWebsiteUrlsController = async (
       statusCode: 200,
       message: "Website urls fetched successfully",
       data: websiteUrls ?? [],
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+export const scrapeWebsitesController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const organisationWebsite =
+      req?.organisation?.website ||
+      // "https://shahidnagodriya.online" ||
+      "https://www.aethelflow.com/" ||
+      "https://teamvx.com";
+
+    const cheerioWebsiteUrlService = new CheerioWebsiteScrapping({
+      url: organisationWebsite!,
+    });
+    const content = await cheerioWebsiteUrlService.getPageContent();
+
+    let cleanedContent: string | null = content;
+
+    if (content) {
+      const openRouterService = new OpenRouterService();
+      const response = await openRouterService.cleanContentOpenRouter(content);
+      cleanedContent = response?.message || null;
+    }
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Website content scrapped successfully",
+      data: cleanedContent,
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

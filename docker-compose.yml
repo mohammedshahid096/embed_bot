@@ -1,0 +1,33 @@
+services:
+  chromaDb:
+    image: chromadb/chroma:latest
+    container_name: embed_bot-chromadb
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+    volumes:
+      - chromadb_data:/chroma/chroma
+
+  redis:
+    image: redis:latest
+    container_name: embed_bot-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: embed_bot-rabbitmq
+    ports:
+      - "5672:5672" # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+volumes:
+  chromadb_data:
+  rabbitmq_data:

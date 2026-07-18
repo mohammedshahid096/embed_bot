@@ -10,6 +10,8 @@ import {
   CheerioWebsiteUrls,
 } from "../../services/cheerio.service";
 import OpenRouterService from "../../services/open-router.service";
+import RabbitMQProducer from "../../services/rabitmq/producer.service";
+import { queueJobs } from "../../constants/rabbitmq.constant";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -94,23 +96,14 @@ export const scrapeWebsitesController = async (
       "https://www.aethelflow.com/" ||
       "https://teamvx.com";
 
-    const cheerioWebsiteUrlService = new CheerioWebsiteScrapping({
+    const rabbitmqProducer = new RabbitMQProducer();
+    await rabbitmqProducer.websiteScrapperProducer({
       url: organisationWebsite!,
     });
-    const content = await cheerioWebsiteUrlService.getPageContent();
-
-    let cleanedContent: string | null = content;
-
-    if (content) {
-      const openRouterService = new OpenRouterService();
-      const response = await openRouterService.cleanContentOpenRouter(content);
-      cleanedContent = response?.message || null;
-    }
 
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "Website content scrapped successfully",
-      data: cleanedContent,
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

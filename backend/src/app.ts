@@ -9,11 +9,12 @@ import compressionConfig from "./config/compression.config";
 import MongoDataBaseConnection from "./config/db.config";
 // routes
 import IndexRoutes from "./routes/index.route";
+import { connectRabbitMQ } from "./config/rabitmq.config";
 
 const app: Application = express();
 
 MongoDataBaseConnection();
-
+connectRabbitMQ();
 // configs using middlewares
 app.use(ratelimitConfig);
 app.use(compressionConfig);

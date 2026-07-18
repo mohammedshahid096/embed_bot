@@ -48,6 +48,10 @@ interface Config {
   openRouter: {
     API_KEY: string;
   };
+
+  rabbitmq: {
+    URL: string;
+  };
 }
 
 dotenv.config();
@@ -103,6 +107,10 @@ const config: Config = {
 
   openRouter: {
     API_KEY: process.env.OPENROUTER_API_KEY || "",
+  },
+
+  rabbitmq: {
+    URL: "amqp://guest:guest@localhost:5672",
   },
 };
 

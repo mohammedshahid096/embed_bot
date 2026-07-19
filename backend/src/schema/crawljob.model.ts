@@ -1,7 +1,12 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import modelConstants from "../constants/model.constant";
 
-type CrawlStatusCodes = "pending" | "processing" | "completed" | "failed";
+export type CrawlStatusCodes =
+  | "pending"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "success_failed";
 
 export interface CrawlJobInterface extends Document {
   organisationId: mongoose.Types.ObjectId;

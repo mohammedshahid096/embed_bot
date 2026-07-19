@@ -1,6 +1,7 @@
 import { queueJobs } from "../../../constants/rabbitmq.constant";
 import CrawlJobModel, {
   CrawlJobInterface,
+  CrawlStatusCodes,
 } from "../../../schema/crawljob.model";
 import { CheerioWebsiteScrapping } from "../../../services/cheerio.service";
 import OpenRouterService from "../../../services/open-router.service";
@@ -66,11 +67,21 @@ const websiteScrapperHandler = async (message: {
       }
 
       const { progress } = newCrawlUpdatedData!;
-      if (progress?.completed + progress?.failed === progress?.total) {
+
+      let statusUpdated: CrawlStatusCodes | null = null;
+      if (progress?.completed === progress?.total) {
+        statusUpdated = "completed";
+      } else if (progress?.failed === progress?.total) {
+        statusUpdated = "failed";
+      } else if (progress?.completed + progress?.failed === progress?.total) {
+        statusUpdated = "success_failed";
+      }
+
+      if (statusUpdated) {
         await CrawlJobModel.findOneAndUpdate(
           { _id: crawlJobId },
           {
-            $set: { status: "completed", completedAt: new Date() },
+            $set: { status: statusUpdated, completedAt: new Date() },
           },
         );
       }

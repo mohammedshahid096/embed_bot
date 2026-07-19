@@ -6,7 +6,10 @@ import {
   onBoardingOrganisationController,
   scrapeWebsitesController,
 } from "../controllers/organisation/user-org.controller";
-import { onBoardingOrganisationValidation } from "../validation/organisation/user-org.joi";
+import {
+  onBoardingOrganisationValidation,
+  scrapeWebsitesValidation,
+} from "../validation/organisation/user-org.joi";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
 
 const userOrganisationRoutes = Router();
@@ -31,5 +34,12 @@ userOrganisationRoutes
     extractUserOrganisationWebsiteUrlsController,
   );
 
-userOrganisationRoutes.route("/scrape-websites").get(scrapeWebsitesController);
+userOrganisationRoutes
+  .route("/scrape-websites")
+  .post(
+    Authentication,
+    OrganisationMiddleware,
+    scrapeWebsitesValidation,
+    scrapeWebsitesController,
+  );
 export default userOrganisationRoutes;

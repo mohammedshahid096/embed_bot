@@ -18,3 +18,14 @@ export const onBoardingOrganisationValidation = celebrate({
     website: Joi.string().uri().required().label("Website"),
   }).required(),
 });
+
+export const scrapeWebsitesValidation = celebrate({
+  body: Joi.object({
+    selectedUrls: Joi.array()
+      .items(Joi.string().uri().required())
+      .min(1)
+      .max(2)
+      .required()
+      .label("Selected URLs"),
+  }).required(),
+});

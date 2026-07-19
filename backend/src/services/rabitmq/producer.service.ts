@@ -1,9 +1,6 @@
 import { queueNames, queueJobs } from "../../constants/rabbitmq.constant";
 import { getRabbitMQChannel } from "../../config/rabitmq.config";
-
-interface IWebsiteScrapperPayload {
-  url: string;
-}
+import { IWebsiteScrapperPayload } from "../../types/rabbitmq/payload.type";
 
 class RabbitMQProducer {
   constructor() {}

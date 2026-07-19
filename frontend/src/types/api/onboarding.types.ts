@@ -12,3 +12,7 @@ export interface OnBoardOrganisationBody {
   contact: string;
   description: string;
 }
+
+export interface ScrapeOrganisationWebsiteUrlsBody {
+  selectedUrls: string[];
+}

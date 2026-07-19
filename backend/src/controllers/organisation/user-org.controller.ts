@@ -12,6 +12,7 @@ import {
 import OpenRouterService from "../../services/open-router.service";
 import RabbitMQProducer from "../../services/rabitmq/producer.service";
 import { queueJobs } from "../../constants/rabbitmq.constant";
+import CrawlJobModel from "../../schema/crawljob.model";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -90,20 +91,44 @@ export const scrapeWebsitesController = async (
   next: NextFunction,
 ) => {
   try {
-    const organisationWebsite =
-      req?.organisation?.website ||
-      // "https://shahidnagodriya.online" ||
-      "https://www.aethelflow.com/" ||
-      "https://teamvx.com";
+    const organisationId = req?.organisation?._id;
+
+    const { selectedUrls } = req.body as { selectedUrls: string[] };
+
+    const crawlJob = await CrawlJobModel.create({
+      organisationId: organisationId,
+      selectedUrls,
+      status: "pending",
+      progress: { total: selectedUrls.length, completed: 0, failed: 0 },
+      results: selectedUrls.map((url: string) => ({
+        url,
+        status: "pending",
+      })),
+    });
 
     const rabbitmqProducer = new RabbitMQProducer();
-    await rabbitmqProducer.websiteScrapperProducer({
-      url: organisationWebsite!,
-    });
+
+    const publishedToQueue = [];
+
+    for (const url of selectedUrls) {
+      const isPublished = await rabbitmqProducer.websiteScrapperProducer({
+        url,
+        organisationId: organisationId?.toString()!,
+        crawlJobId: crawlJob?._id.toString()!,
+      });
+
+      if (isPublished) {
+        publishedToQueue.push(url);
+      }
+    }
 
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
-      message: "Website content scrapped successfully",
+      message: "Website content scrapping started",
+      data: {
+        crawlJobId: crawlJob._id,
+        publishedToQueue,
+      },
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

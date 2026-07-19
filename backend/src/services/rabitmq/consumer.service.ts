@@ -1,6 +1,7 @@
 import { queueNames, queueJobs } from "../../constants/rabbitmq.constant";
 import { getRabbitMQChannel } from "../../config/rabitmq.config";
 import websiteScrapperHandler from "./handlers/websiteScrapper.handler";
+import { IWebsiteScrapperPayload } from "../../types/rabbitmq/payload.type";
 
 class RabbitMQConsumer {
   constructor() {}
@@ -13,9 +14,12 @@ class RabbitMQConsumer {
     channel.consume(queueNames.scrapping_queue, async (msg) => {
       if (!msg) return;
       try {
-        const content = JSON.parse(msg.content.toString());
+        const content = JSON.parse(msg.content.toString()) as {
+          job: string;
+          data: IWebsiteScrapperPayload;
+        };
         const response = await websiteScrapperHandler(content);
-        // console.log(response);
+        console.log(response);
 
         channel.ack(msg);
       } catch (error) {

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Globe, 
-  Search, 
-  Plus, 
-  Check, 
-  ArrowRight, 
-  Loader2, 
+import {
+  Globe,
+  Search,
+  Plus,
+  Check,
+  ArrowRight,
+  Loader2,
   AlertCircle,
-  Trash2
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { extractOrganisationWebsiteUrlsApi } from "@/api/onboard.api";
+import {
+  extractOrganisationWebsiteUrlsApi,
+  scrapeOrganisationWebsiteUrlsApi,
+} from "@/api/onboard.api";
 import OnboardingLayout from "@/view/layout/OnboardingLayout";
 import OnboardingStepper from "@/view/features/onboarding/OnboardingStepper";
 
@@ -63,14 +66,18 @@ export default function ExtractWebsiteUrls() {
             defaultSelection.add(url);
           });
           setSelectedUrls(defaultSelection);
-          
+
           if (extractedList.length > 0) {
-            toast.success(`Successfully fetched website URLs! Selected first ${Math.min(extractedList.length, MAX_URLS_TO_SELECT)}.`);
+            toast.success(
+              `Successfully fetched website URLs! Selected first ${Math.min(extractedList.length, MAX_URLS_TO_SELECT)}.`,
+            );
           } else {
             toast.success("Successfully fetched website URLs!");
           }
         } else {
-          toast.error("Failed to fetch website URLs. Please add them manually.");
+          toast.error(
+            "Failed to fetch website URLs. Please add them manually.",
+          );
         }
       } catch (error) {
         console.error("Error fetching website URLs:", error);
@@ -85,7 +92,7 @@ export default function ExtractWebsiteUrls() {
 
   // Filter URLs based on search query
   const filteredUrls = urls.filter((url) =>
-    url.toLowerCase().includes(searchQuery.toLowerCase())
+    url.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Toggle individual URL selection
@@ -96,7 +103,9 @@ export default function ExtractWebsiteUrls() {
       setSelectedUrls(newSelected);
     } else {
       if (newSelected.size >= MAX_URLS_TO_SELECT) {
-        toast.warning(`You can select a maximum of ${MAX_URLS_TO_SELECT} URLs to crawl.`);
+        toast.warning(
+          `You can select a maximum of ${MAX_URLS_TO_SELECT} URLs to crawl.`,
+        );
         return;
       }
       newSelected.add(url);
@@ -121,7 +130,9 @@ export default function ExtractWebsiteUrls() {
 
     setSelectedUrls(newSelected);
     if (reachedLimit) {
-      toast.warning(`Selection capped at the maximum limit of ${MAX_URLS_TO_SELECT} URLs.`);
+      toast.warning(
+        `Selection capped at the maximum limit of ${MAX_URLS_TO_SELECT} URLs.`,
+      );
     }
   };
 
@@ -153,7 +164,9 @@ export default function ExtractWebsiteUrls() {
       setSelectedUrls((prev) => {
         const next = new Set(prev);
         if (next.size >= MAX_URLS_TO_SELECT) {
-          toast.warning(`URL added to list but not selected. Maximum selection is ${MAX_URLS_TO_SELECT}.`);
+          toast.warning(
+            `URL added to list but not selected. Maximum selection is ${MAX_URLS_TO_SELECT}.`,
+          );
           return next;
         }
         next.add(formattedUrl);
@@ -188,11 +201,17 @@ export default function ExtractWebsiteUrls() {
     try {
       const selectedList = Array.from(selectedUrls);
       console.log("Submitting selected URLs for crawling:", selectedList);
-      
-      // In a real application, you might hit a save/crawl endpoint here
-      // For now, since we only update frontend, we simulate successful save and go to dashboard
-      toast.success(`Successfully submitted ${selectedList.length} URLs for crawling!`);
-      navigate("/dashboard");
+      const response = await scrapeOrganisationWebsiteUrlsApi({
+        selectedUrls: selectedList,
+      });
+      if (response[0]) {
+        toast.success(
+          `Successfully submitted ${selectedList.length} URLs for crawling!`,
+        );
+        navigate("/dashboard");
+      } else {
+        toast.error("Failed to submit URLs. Please try again.");
+      }
     } catch (error) {
       toast.error("Failed to submit URLs. Please try again.");
     } finally {
@@ -245,12 +264,14 @@ export default function ExtractWebsiteUrls() {
                 <div>
                   <CardTitle className="text-lg">Extracted Pages</CardTitle>
                   <CardDescription>
-                    We automatically fetched these pages from your site map and links
+                    We automatically fetched these pages from your site map and
+                    links
                   </CardDescription>
                 </div>
                 {!isLoading && urls.length > 0 && (
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                    {selectedUrls.size} of {urls.length} Selected (Max {MAX_URLS_TO_SELECT})
+                    {selectedUrls.size} of {urls.length} Selected (Max{" "}
+                    {MAX_URLS_TO_SELECT})
                   </span>
                 )}
               </div>
@@ -265,9 +286,13 @@ export default function ExtractWebsiteUrls() {
                     <Globe className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-purple-400 animate-pulse" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-md font-semibold text-foreground">Analyzing website pages...</h3>
+                    <h3 className="text-md font-semibold text-foreground">
+                      Analyzing website pages...
+                    </h3>
                     <p className="text-xs text-muted-foreground max-w-sm">
-                      We are parsing your website sitemap and structural layout to extract all accessible pages. This may take a few seconds.
+                      We are parsing your website sitemap and structural layout
+                      to extract all accessible pages. This may take a few
+                      seconds.
                     </p>
                   </div>
                 </div>
@@ -284,12 +309,14 @@ export default function ExtractWebsiteUrls() {
                         placeholder="https://example.com/custom-subpage"
                         value={customUrl}
                         onChange={(e) => setCustomUrl(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleAddCustomUrl()}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" && handleAddCustomUrl()
+                        }
                         className="w-full bg-background border border-white/10 rounded-md py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
                       />
                     </div>
-                    <Button 
-                      type="button" 
+                    <Button
+                      type="button"
                       onClick={handleAddCustomUrl}
                       className="bg-purple-600/90 text-white hover:bg-purple-600 active:scale-95 transition-all text-xs py-2 px-4"
                     >
@@ -343,11 +370,14 @@ export default function ExtractWebsiteUrls() {
                         <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground space-y-2">
                           <AlertCircle className="h-8 w-8 text-muted-foreground/60" />
                           <p className="text-sm">
-                            {urls.length === 0 ? "No website URLs found." : "No matching pages found."}
+                            {urls.length === 0
+                              ? "No website URLs found."
+                              : "No matching pages found."}
                           </p>
                           {urls.length === 0 && (
                             <p className="text-xs text-muted-foreground/60">
-                              Please use the "Add Custom URL" field above to specify pages.
+                              Please use the "Add Custom URL" field above to
+                              specify pages.
                             </p>
                           )}
                         </div>
@@ -370,9 +400,13 @@ export default function ExtractWebsiteUrls() {
                                     <div className="h-4 w-4 rounded border border-white/30" />
                                   )}
                                 </div>
-                                <span className={`text-xs truncate font-mono transition-colors ${
-                                  isSelected ? "text-foreground" : "text-muted-foreground/70"
-                                }`}>
+                                <span
+                                  className={`text-xs truncate font-mono transition-colors ${
+                                    isSelected
+                                      ? "text-foreground"
+                                      : "text-muted-foreground/70"
+                                  }`}
+                                >
                                   {url}
                                 </span>
                               </div>

@@ -23,8 +23,10 @@ export interface CrawlJobInterface extends Document {
     knowledgeBaseId: mongoose.Types.ObjectId;
     error: string;
   }[];
-  createdAt: Date;
+
   completedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const crawlJobSchema = new Schema<CrawlJobInterface>(
@@ -49,7 +51,10 @@ const crawlJobSchema = new Schema<CrawlJobInterface>(
       {
         url: String,
         status: { type: String, enum: ["pending", "success", "failed"] },
-        knowledgeBaseId: { type: Schema.Types.ObjectId, ref: "KnowledgeBase" },
+        knowledgeBaseId: {
+          type: Schema.Types.ObjectId,
+          ref: modelConstants.knowledgeBase,
+        },
         error: String,
       },
     ],

@@ -13,6 +13,7 @@ import OpenRouterService from "../../services/open-router.service";
 import RabbitMQProducer from "../../services/rabitmq/producer.service";
 import { queueJobs } from "../../constants/rabbitmq.constant";
 import CrawlJobModel from "../../schema/crawljob.model";
+import KnowledgeBaseModel from "../../schema/knowledgebase.model";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -95,14 +96,26 @@ export const scrapeWebsitesController = async (
 
     const { selectedUrls } = req.body as { selectedUrls: string[] };
 
+    const kbDocs = await KnowledgeBaseModel.insertMany(
+      selectedUrls.map((url: string, index: number) => ({
+        organisationId,
+        name: url,
+        sourceType: "url",
+        sourceUrl: url,
+        status: "processing",
+        order: index + 1,
+      })),
+    );
+
     const crawlJob = await CrawlJobModel.create({
       organisationId: organisationId,
       selectedUrls,
       status: "pending",
       progress: { total: selectedUrls.length, completed: 0, failed: 0 },
-      results: selectedUrls.map((url: string) => ({
+      results: selectedUrls.map((url: string, index: number) => ({
         url,
         status: "pending",
+        knowledgeBaseId: kbDocs[index]._id,
       })),
     });
 
@@ -115,6 +128,7 @@ export const scrapeWebsitesController = async (
         url,
         organisationId: organisationId?.toString()!,
         crawlJobId: crawlJob?._id.toString()!,
+        knowledgeBaseId: kbDocs[selectedUrls.indexOf(url)]._id.toString(),
       });
 
       if (isPublished) {

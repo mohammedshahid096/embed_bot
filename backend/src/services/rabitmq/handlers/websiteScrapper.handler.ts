@@ -3,6 +3,7 @@ import CrawlJobModel, {
   CrawlJobInterface,
   CrawlStatusCodes,
 } from "../../../schema/crawljob.model";
+import KnowledgeBaseModel from "../../../schema/knowledgebase.model";
 import { CheerioWebsiteScrapping } from "../../../services/cheerio.service";
 import OpenRouterService from "../../../services/open-router.service";
 import { IWebsiteScrapperPayload } from "../../../types/rabbitmq/payload.type";
@@ -27,7 +28,7 @@ const websiteScrapperHandler = async (message: {
           { $set: { status: "running" } },
         );
       }
-      const { url, crawlJobId } = data;
+      const { url, crawlJobId, knowledgeBaseId } = data;
 
       const cheerioWebsiteUrlService = new CheerioWebsiteScrapping({
         url,
@@ -43,6 +44,12 @@ const websiteScrapperHandler = async (message: {
         const response =
           await openRouterService.cleanContentOpenRouter(content);
         cleanedContent = response?.message || null;
+
+        await KnowledgeBaseModel.findByIdAndUpdate(knowledgeBaseId, {
+          status: "ready",
+          content: cleanedContent || content,
+          //  chunkCount: chunks.length,
+        });
 
         newCrawlUpdatedData = await CrawlJobModel.findOneAndUpdate(
           { _id: crawlJobId, "results.url": url },
@@ -64,6 +71,10 @@ const websiteScrapperHandler = async (message: {
           },
           { new: true },
         );
+
+        await KnowledgeBaseModel.findByIdAndUpdate(knowledgeBaseId, {
+          status: "failed",
+        });
       }
 
       const { progress } = newCrawlUpdatedData!;

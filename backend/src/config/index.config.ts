@@ -118,7 +118,9 @@ const config: Config = {
   },
 
   crypto: {
-    ENCRYPTION_SECRET: process.env.ENCRYPTION_SECRET || "encryption_secret_key",
+    ENCRYPTION_SECRET:
+      process.env.ENCRYPTION_SECRET ||
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", // 32 bytes for AES-256
   },
 };
 

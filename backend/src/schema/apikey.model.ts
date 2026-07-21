@@ -41,32 +41,32 @@ const apiKeySchema = new Schema<ApiKeyInterface>(
       required: true,
     },
     gemini: {
-      encryptedKey: { type: String, select: false },
+      encryptedKey: { type: String },
       keyLastFour: { type: String },
     },
 
     openrouter: {
-      encryptedKey: { type: String, select: false },
+      encryptedKey: { type: String },
       keyLastFour: { type: String },
     },
 
     openRouter: {
-      encryptedKey: { type: String, select: false },
+      encryptedKey: { type: String },
       keyLastFour: { type: String },
     },
 
     openai: {
-      encryptedKey: { type: String, select: false },
+      encryptedKey: { type: String },
       keyLastFour: { type: String },
     },
 
     anthropic: {
-      encryptedKey: { type: String, select: false },
+      encryptedKey: { type: String },
       keyLastFour: { type: String },
     },
 
     groq: {
-      encryptedKey: { type: String, select: false },
+      encryptedKey: { type: String },
       keyLastFour: { type: String },
     },
 

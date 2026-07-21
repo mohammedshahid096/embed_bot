@@ -11,6 +11,7 @@ import {
   scrapeWebsitesValidation,
 } from "../validation/organisation/user-org.joi";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
+import { addOrganisationApiKeyController } from "../controllers/organisation/apikey.controller";
 
 const userOrganisationRoutes = Router();
 
@@ -42,4 +43,9 @@ userOrganisationRoutes
     scrapeWebsitesValidation,
     scrapeWebsitesController,
   );
+
+userOrganisationRoutes
+  .route("/onboard/add-api-key")
+  .post(addOrganisationApiKeyController);
+
 export default userOrganisationRoutes;

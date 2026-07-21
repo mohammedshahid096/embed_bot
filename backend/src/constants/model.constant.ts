@@ -3,6 +3,7 @@ const modelConstants = {
   organization: "organization",
   crawlJob: "crawljob",
   knowledgeBase: "knowledgebase",
+  apiKey: "apikey",
 };
 
 export default modelConstants;

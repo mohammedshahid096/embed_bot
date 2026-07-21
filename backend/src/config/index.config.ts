@@ -52,6 +52,10 @@ interface Config {
   rabbitmq: {
     URL: string;
   };
+
+  crypto: {
+    ENCRYPTION_SECRET: string;
+  };
 }
 
 dotenv.config();
@@ -111,6 +115,10 @@ const config: Config = {
 
   rabbitmq: {
     URL: "amqp://guest:guest@localhost:5672",
+  },
+
+  crypto: {
+    ENCRYPTION_SECRET: process.env.ENCRYPTION_SECRET || "encryption_secret_key",
   },
 };
 

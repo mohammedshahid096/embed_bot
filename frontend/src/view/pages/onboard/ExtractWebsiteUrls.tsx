@@ -42,49 +42,42 @@ export default function ExtractWebsiteUrls() {
   useEffect(() => {
     const fetchUrls = async () => {
       setIsLoading(true);
-      try {
-        const response = await extractOrganisationWebsiteUrlsApi();
-        const success = response[0];
-        const responseData = response[1];
 
-        if (success) {
-          const rawData = responseData?.data;
-          let extractedList: string[] = [];
+      const response = await extractOrganisationWebsiteUrlsApi();
+      const success = response[0];
+      const responseData = response[1];
 
-          if (Array.isArray(rawData)) {
-            extractedList = rawData;
-          } else if (rawData && Array.isArray(rawData.urls)) {
-            extractedList = rawData.urls;
-          } else if (Array.isArray(responseData)) {
-            extractedList = responseData;
-          }
+      if (success) {
+        const rawData = responseData?.data;
+        let extractedList: string[] = [];
 
-          setUrls(extractedList);
-          // Select up to MAX_URLS_TO_SELECT by default
-          const defaultSelection = new Set<string>();
-          extractedList.slice(0, MAX_URLS_TO_SELECT).forEach((url) => {
-            defaultSelection.add(url);
-          });
-          setSelectedUrls(defaultSelection);
-
-          if (extractedList.length > 0) {
-            toast.success(
-              `Successfully fetched website URLs! Selected first ${Math.min(extractedList.length, MAX_URLS_TO_SELECT)}.`,
-            );
-          } else {
-            toast.success("Successfully fetched website URLs!");
-          }
-        } else {
-          toast.error(
-            "Failed to fetch website URLs. Please add them manually.",
-          );
+        if (Array.isArray(rawData)) {
+          extractedList = rawData;
+        } else if (rawData && Array.isArray(rawData.urls)) {
+          extractedList = rawData.urls;
+        } else if (Array.isArray(responseData)) {
+          extractedList = responseData;
         }
-      } catch (error) {
-        console.error("Error fetching website URLs:", error);
-        toast.error("An error occurred while fetching website URLs.");
-      } finally {
-        setIsLoading(false);
+
+        setUrls(extractedList);
+        // Select up to MAX_URLS_TO_SELECT by default
+        const defaultSelection = new Set<string>();
+        extractedList.slice(0, MAX_URLS_TO_SELECT).forEach((url) => {
+          defaultSelection.add(url);
+        });
+        setSelectedUrls(defaultSelection);
+
+        if (extractedList.length > 0) {
+          toast.success(
+            `Successfully fetched website URLs! Selected first ${Math.min(extractedList.length, MAX_URLS_TO_SELECT)}.`,
+          );
+        } else {
+          toast.success("Successfully fetched website URLs!");
+        }
+      } else {
+        toast.error("Failed to fetch website URLs. Please add them manually.");
       }
+      setIsLoading(false);
     };
 
     fetchUrls();

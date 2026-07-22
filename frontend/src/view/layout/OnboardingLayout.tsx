@@ -1,5 +1,5 @@
 import Context from "@/context/context";
-import { useContext, useEffect, type ReactNode } from "react";
+import { useContext, useEffect, useState, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface OnboardingLayoutInitialProps {
@@ -11,7 +11,9 @@ const OnboardingLayout = ({ children }: OnboardingLayoutInitialProps) => {
   const location = useLocation();
   const {
     userProfileState: { profileDetails },
+    organisationState: { apiKeyAdded },
   } = useContext(Context);
+  const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (
@@ -19,9 +21,16 @@ const OnboardingLayout = ({ children }: OnboardingLayoutInitialProps) => {
       location.pathname === "/onboard/organisation-details"
     ) {
       navigate("/");
+    } else if (apiKeyAdded && location.pathname === "/onboard/api-keys") {
+      navigate("/");
+    } else if (apiKeyAdded && location.pathname === "/onboard/website-urls") {
+      navigate("/");
+    } else {
+      setIsLoading(false);
     }
-  }, [profileDetails]);
-  return children;
+  }, [profileDetails, apiKeyAdded, location.pathname]);
+
+  return isloading ? null : children;
 };
 
 export default OnboardingLayout;

@@ -18,7 +18,7 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
   const navigate = useNavigate();
   const {
     userProfileState: { getUserprofileDetailsAction, profileDetails },
-    organisationState: { getOrganisationDetailsAction, organisationDetails },
+    organisationState: { getOrganisationDetailsAction },
   } = useContext(Context);
 
   const [isLoading, setIsLoading] = useState(true);

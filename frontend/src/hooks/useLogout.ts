@@ -1,3 +1,4 @@
+import { logoutAuthApi } from "@/api/auth.api";
 import { removeSecondaryAccessToken } from "@/helpers/cookie.helper";
 import { clearAll } from "@/helpers/localstorage.helper";
 import { useCallback } from "react";
@@ -9,10 +10,12 @@ const useLogout = () => {
   const navigate = useNavigate();
 
   const resetApplications = useCallback(async () => {
-    // setTimeout(() => {}, 1000);
+    // setTimeout(() => {
+    // }, 1000);
 
     clearAll();
     removeSecondaryAccessToken();
+    logoutAuthApi();
     navigate("/");
   }, []);
 

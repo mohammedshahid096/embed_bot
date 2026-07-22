@@ -43,3 +43,8 @@ export const verifyRegisterVerificationLinkAuthApi = async (token: string) => {
   );
   return response;
 };
+
+export const logoutAuthApi = async () => {
+  const response = await Service.fetchGetAuth("/auth/logout");
+  return response;
+};

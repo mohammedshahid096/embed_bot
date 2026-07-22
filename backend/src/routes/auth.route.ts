@@ -6,6 +6,7 @@ import {
   verifyRegisterVerificationLinkController,
   checkEmailExistenceController,
   checkRegisterVerificationLinkController,
+  logoutAuthController,
 } from "../controllers/users/auth.controller";
 import {
   loginAuthValidation,
@@ -13,6 +14,7 @@ import {
   verifyRegisterVerificationLinkValidation,
   checkEmailAvailabilityValidation,
 } from "../validation/user/auth.joi";
+import { Authentication } from "../middlewares/auth.middleware";
 
 const authRoutes = Router();
 
@@ -38,6 +40,7 @@ authRoutes
   .get(checkRegisterVerificationLinkController);
 
 authRoutes.route("/login").post(loginAuthValidation, loginAuthController);
+authRoutes.route("/logout").get(Authentication, logoutAuthController);
 
 authRoutes.route("/generate-access-token").get(generateAccessTokenController);
 

@@ -182,6 +182,24 @@ export const loginAuthController = async (
   }
 };
 
+export const logoutAuthController = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
 export const generateAccessTokenController = async (
   req: Request,
   res: Response,

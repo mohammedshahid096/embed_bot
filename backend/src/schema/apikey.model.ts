@@ -2,28 +2,24 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 import modelConstants from "../constants/model.constant";
 
 export interface ApiKeyInterface extends Document {
-  orgId: mongoose.Types.ObjectId;
-  gemini: {
+  organisationId: mongoose.Types.ObjectId;
+  gemini?: {
     encryptedKey: string;
     keyLastFour: string;
   };
-  openrouter: {
+  openrouter?: {
     encryptedKey: string;
     keyLastFour: string;
   };
-  openRouter: {
+  openai?: {
     encryptedKey: string;
     keyLastFour: string;
   };
-  openai: {
+  anthropic?: {
     encryptedKey: string;
     keyLastFour: string;
   };
-  anthropic: {
-    encryptedKey: string;
-    keyLastFour: string;
-  };
-  groq: {
+  groq?: {
     encryptedKey: string;
     keyLastFour: string;
   };
@@ -35,7 +31,7 @@ export interface ApiKeyInterface extends Document {
 
 const apiKeySchema = new Schema<ApiKeyInterface>(
   {
-    orgId: {
+    organisationId: {
       type: Schema.Types.ObjectId,
       ref: modelConstants.organization,
       required: true,
@@ -46,11 +42,6 @@ const apiKeySchema = new Schema<ApiKeyInterface>(
     },
 
     openrouter: {
-      encryptedKey: { type: String },
-      keyLastFour: { type: String },
-    },
-
-    openRouter: {
       encryptedKey: { type: String },
       keyLastFour: { type: String },
     },

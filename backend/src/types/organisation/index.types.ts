@@ -13,3 +13,8 @@ export interface OnBoardOrganisationBody {
   contact: string;
   description: string;
 }
+
+export interface AddOrganisationApiKeyBody {
+  gemini: string;
+  openrouter: string;
+}

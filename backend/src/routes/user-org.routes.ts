@@ -12,6 +12,7 @@ import {
 } from "../validation/organisation/user-org.joi";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
 import { addOrganisationApiKeyController } from "../controllers/organisation/apikey.controller";
+import { addOrganisationApiKeyValidation } from "../validation/organisation/apikey.joi";
 
 const userOrganisationRoutes = Router();
 
@@ -46,6 +47,11 @@ userOrganisationRoutes
 
 userOrganisationRoutes
   .route("/onboard/add-api-key")
-  .post(addOrganisationApiKeyController);
+  .post(
+    Authentication,
+    OrganisationMiddleware,
+    addOrganisationApiKeyValidation,
+    addOrganisationApiKeyController,
+  );
 
 export default userOrganisationRoutes;

@@ -5,13 +5,8 @@ import errorHandling, { AppError } from "../../utils/errorHandling.util";
 import responseHandlingUtil from "../../utils/responseHandling.util";
 import { OnBoardOrganisationBody } from "../../types/organisation/index.types";
 import UserModel from "../../schema/user.model";
-import {
-  CheerioWebsiteScrapping,
-  CheerioWebsiteUrls,
-} from "../../services/cheerio.service";
-import OpenRouterService from "../../services/open-router.service";
+import { CheerioWebsiteUrls } from "../../services/cheerio.service";
 import RabbitMQProducer from "../../services/rabitmq/producer.service";
-import { queueJobs } from "../../constants/rabbitmq.constant";
 import CrawlJobModel from "../../schema/crawljob.model";
 import KnowledgeBaseModel from "../../schema/knowledgebase.model";
 

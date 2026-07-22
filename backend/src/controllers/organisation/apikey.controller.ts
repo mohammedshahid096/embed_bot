@@ -13,6 +13,7 @@ export const addOrganisationApiKeyController = async (
 ) => {
   try {
     const organisationId = req?.organisation?._id;
+    const userId = req?.authUser?._id;
 
     const { gemini, openrouter } = req.body as AddOrganisationApiKeyBody;
 
@@ -26,6 +27,7 @@ export const addOrganisationApiKeyController = async (
 
     const newApiDetails: Partial<ApiKeyInterface> = {
       organisationId,
+      addedBy: userId,
     };
 
     if (gemini) {

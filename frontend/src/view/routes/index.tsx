@@ -9,6 +9,7 @@ import AddApiKeys from "../pages/onboard/AddApiKeys";
 import ClientDashboardPage from "../pages/client/ClientDashboardPage";
 import KnowledgeBasePage from "../pages/client/KnowledgeBasePage";
 import AuthWrapper from "../layout/AuthWrapper";
+import ClientLayout from "../layout/ClientLayout";
 
 export interface RouteConfig {
   path: string;
@@ -60,7 +61,9 @@ export const routes: RouteConfig[] = [
     path: "/dashboard",
     element: (
       <AuthWrapper roles={["client"]}>
-        <ClientDashboardPage />
+        <ClientLayout>
+          <ClientDashboardPage />
+        </ClientLayout>
       </AuthWrapper>
     ),
   },
@@ -68,7 +71,9 @@ export const routes: RouteConfig[] = [
     path: "/knowledge-base",
     element: (
       <AuthWrapper roles={["client"]}>
-        <KnowledgeBasePage />
+        <ClientLayout>
+          <KnowledgeBasePage />
+        </ClientLayout>
       </AuthWrapper>
     ),
   },
@@ -77,4 +82,3 @@ export const routes: RouteConfig[] = [
   //   element: <NotFound />,
   // },
 ];
-

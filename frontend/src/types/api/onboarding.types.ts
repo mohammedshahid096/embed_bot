@@ -16,3 +16,8 @@ export interface OnBoardOrganisationBody {
 export interface ScrapeOrganisationWebsiteUrlsBody {
   selectedUrls: string[];
 }
+
+export interface AddOrganisationApiKeyBody {
+  gemini: string;
+  openrouter: string;
+}

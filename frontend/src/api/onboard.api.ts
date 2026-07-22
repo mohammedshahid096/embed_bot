@@ -1,5 +1,6 @@
 import Service from "@/services";
 import type {
+  AddOrganisationApiKeyBody,
   OnBoardOrganisationBody,
   ScrapeOrganisationWebsiteUrlsBody,
 } from "@/types/api/onboarding.types";
@@ -23,6 +24,16 @@ export const scrapeOrganisationWebsiteUrlsApi = async (
 ) => {
   const response = await Service.fetchPostAuth(
     "/organisation/scrape-websites",
+    body,
+  );
+  return response;
+};
+
+export const addOrganisationApiKeyApi = async (
+  body: AddOrganisationApiKeyBody,
+) => {
+  const response = await Service.fetchPostAuth(
+    "/organisation/onboard/add-api-key",
     body,
   );
   return response;

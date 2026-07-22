@@ -5,6 +5,7 @@ import LoginPage from "../pages/auth/LoginPage";
 import RegisterVerificationPage from "../pages/auth/RegisterVerificationPage";
 import CompanyDetails from "../pages/onboard/CompanyDetails";
 import ExtractWebsiteUrls from "../pages/onboard/ExtractWebsiteUrls";
+import AddApiKeys from "../pages/onboard/AddApiKeys";
 import ClientDashboardPage from "../pages/client/ClientDashboardPage";
 import KnowledgeBasePage from "../pages/client/KnowledgeBasePage";
 import AuthWrapper from "../layout/AuthWrapper";
@@ -44,6 +45,14 @@ export const routes: RouteConfig[] = [
     element: (
       <AuthWrapper roles={["client"]}>
         <ExtractWebsiteUrls />
+      </AuthWrapper>
+    ),
+  },
+  {
+    path: "/onboard/api-keys",
+    element: (
+      <AuthWrapper roles={["client"]}>
+        <AddApiKeys />
       </AuthWrapper>
     ),
   },

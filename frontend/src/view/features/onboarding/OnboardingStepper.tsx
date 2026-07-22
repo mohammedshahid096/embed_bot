@@ -1,4 +1,4 @@
-import { Building2, Globe, Check } from "lucide-react";
+import { Building2, Globe, KeyRound, Check } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const ONBOARDING_STEPS = [
@@ -13,6 +13,12 @@ const ONBOARDING_STEPS = [
     label: "Website URLs",
     path: "/onboard/website-urls",
     icon: Globe,
+  },
+  {
+    id: 3,
+    label: "API Keys",
+    path: "/onboard/api-keys",
+    icon: KeyRound,
   },
 ];
 

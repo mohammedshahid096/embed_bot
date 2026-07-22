@@ -208,7 +208,7 @@ export default function ExtractWebsiteUrls() {
         toast.success(
           `Successfully submitted ${selectedList.length} URLs for crawling!`,
         );
-        navigate("/dashboard");
+        navigate("/onboard/api-keys");
       } else {
         toast.error("Failed to submit URLs. Please try again.");
       }

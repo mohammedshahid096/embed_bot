@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Service from "@/services";
 import useLogout from "@/hooks/useLogout";
 import Context from "@/context/context";
+import AuthLoader from "@/components/loader/AuthLoader";
 
 interface AuthWrapperType {
   roles: Array<string>;
@@ -17,6 +18,7 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
   const navigate = useNavigate();
   const {
     userProfileState: { getUserprofileDetailsAction, profileDetails },
+    organisationState: { getOrganisationDetailsAction, organisationDetails },
   } = useContext(Context);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -51,15 +53,19 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
     if (!response[1]?.success) {
       logoutFunction();
     } else {
-      setIsLoading(false);
       const userDetails = response[1]?.data;
       if (!userDetails?.organisationId) {
+        setIsLoading(false);
         navigate("/onboard/organisation-details");
+        return;
+      } else {
+        await getOrganisationDetailsAction();
       }
+      setIsLoading(false);
     }
   };
 
-  return isLoading ? <div>loader</div> : children;
+  return isLoading ? <AuthLoader /> : children;
 };
 
 export default memo(AuthWrapper);

@@ -52,7 +52,8 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
     const response = await getOrganisationDetailsAction();
     if (
       response[0] &&
-      response[1]?.organistationDetails?.onBoardingStage !== "apiKeyAddition"
+      response[1]?.data?.organistationDetails?.onBoardingStage !==
+        "apiKeyAddition"
     ) {
       navigate("/onboard/organisation-details");
     }

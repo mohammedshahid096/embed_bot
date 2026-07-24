@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import config from "./index.config";
-import { magenta } from "colorette";
+import { magenta, red } from "colorette";
 
 // Function for database connection
 const MongoDataBaseConnection = async (): Promise<void> => {
@@ -10,6 +10,12 @@ const MongoDataBaseConnection = async (): Promise<void> => {
     await mongoose.connect(dbUrl as string);
 
     console.log(`${magenta("[Database]")} Connected successfully.`);
+
+    if (config.mongodb.DROP_DATABASE) {
+      await mongoose.connection.dropDatabase();
+      console.log(`${red("[Database]")} Dropped successfully.`);
+      process.exit(0);
+    }
   } catch (error: unknown) {
     if (error instanceof mongoose.Error.CastError) {
       console.error("CastError:", error.value, error.path);

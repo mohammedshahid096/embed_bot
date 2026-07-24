@@ -14,6 +14,7 @@ interface Config {
 
   mongodb: {
     DB_URL: string;
+    DROP_DATABASE: boolean;
   };
 
   redis: {
@@ -75,6 +76,7 @@ const config: Config = {
 
   mongodb: {
     DB_URL: process.env.DB_URL || "mongodb://127.0.0.1:27017/embed_bot",
+    DROP_DATABASE: false,
   },
 
   redis: {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   KeyRound,
@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { addOrganisationApiKeyApi } from "@/api/onboard.api";
 import OnboardingLayout from "@/view/layout/OnboardingLayout";
 import OnboardingStepper from "@/view/features/onboarding/OnboardingStepper";
+import Context from "@/context/context";
 
 const API_PROVIDERS = [
   {
@@ -81,6 +82,9 @@ const API_PROVIDERS = [
 ];
 
 export default function AddApiKeys() {
+  const {
+    organisationState: { updateOrganisationStateAction, organisationDetails },
+  } = useContext(Context);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [keys, setKeys] = useState({ gemini: "", openrouter: "" });
@@ -114,6 +118,12 @@ export default function AddApiKeys() {
 
     if (response[1]?.success) {
       toast.success("API keys saved successfully!");
+      updateOrganisationStateAction({
+        organisationDetails: {
+          ...organisationDetails,
+          onBoardingStage: "apiKeyAddition",
+        },
+      });
       navigate("/dashboard");
     } else {
       toast.error(

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { createOrganisationDetailsApi } from "@/api/onboard.api";
 import OnboardingLayout from "@/view/layout/OnboardingLayout";
 import OnboardingStepper from "@/view/features/onboarding/OnboardingStepper";
+import Context from "@/context/context";
 
 // Zod Validation Schema
 const schema = z.object({
@@ -45,6 +46,9 @@ type FormData = z.infer<typeof schema>;
 
 function CompanyDetails() {
   const navigate = useNavigate();
+  const {
+    organisationState: { updateOrganisationStateAction, organisationDetails },
+  } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
 
   // States for country-state-city dropdowns
@@ -138,6 +142,12 @@ function CompanyDetails() {
       const response = await createOrganisationDetailsApi(payload);
       if (response[2] === 201) {
         toast.success("Organisation details saved successfully!");
+        updateOrganisationStateAction({
+          organisationDetails: {
+            ...organisationDetails,
+            onBoardingStage: "organizationDetails",
+          },
+        });
         navigate("/onboard/website-urls");
       } else {
         toast.error("Failed to save organisation details. Please try again.");

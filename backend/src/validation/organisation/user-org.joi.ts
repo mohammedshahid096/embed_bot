@@ -24,7 +24,7 @@ export const scrapeWebsitesValidation = celebrate({
     selectedUrls: Joi.array()
       .items(Joi.string().uri().required())
       .min(1)
-      .max(2)
+      .max(10)
       .required()
       .label("Selected URLs"),
   }).required(),

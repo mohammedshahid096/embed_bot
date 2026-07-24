@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Globe,
@@ -26,10 +26,14 @@ import {
 } from "@/api/onboard.api";
 import OnboardingLayout from "@/view/layout/OnboardingLayout";
 import OnboardingStepper from "@/view/features/onboarding/OnboardingStepper";
+import Context from "@/context/context";
 
 const MAX_URLS_TO_SELECT = 10;
 
 export default function ExtractWebsiteUrls() {
+  const {
+    organisationState: { updateOrganisationStateAction, organisationDetails },
+  } = useContext(Context);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -201,6 +205,12 @@ export default function ExtractWebsiteUrls() {
         toast.success(
           `Successfully submitted ${selectedList.length} URLs for crawling!`,
         );
+        updateOrganisationStateAction({
+          organisationDetails: {
+            ...organisationDetails,
+            onBoardingStage: "websiteSetup",
+          },
+        });
         navigate("/onboard/api-keys");
       } else {
         toast.error("Failed to submit URLs. Please try again.");

@@ -1,5 +1,11 @@
+import ClientLayout from "@/view/layout/ClientLayout";
+
 const ClientDashboardPage = () => {
-  return <div>ClientDashboardPage</div>;
+  return (
+    <ClientLayout>
+      <div>ClientDashboardPage</div>
+    </ClientLayout>
+  );
 };
 
 export default ClientDashboardPage;

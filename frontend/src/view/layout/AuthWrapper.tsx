@@ -48,6 +48,16 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
     };
   }, [location.pathname, isLoading]);
 
+  const fetchOrganisationDetails = async () => {
+    const response = await getOrganisationDetailsAction();
+    if (
+      response[0] &&
+      response[1]?.organistationDetails?.onBoardingStage !== "apiKeyAddition"
+    ) {
+      navigate("/onboard/organisation-details");
+    }
+  };
+
   const fetchMyProfileDetails = async () => {
     const response = await getUserprofileDetailsAction();
     if (!response[1]?.success) {
@@ -59,7 +69,7 @@ const AuthWrapper: React.FC<AuthWrapperType> = ({ roles = [], children }) => {
         navigate("/onboard/organisation-details");
         return;
       } else {
-        await getOrganisationDetailsAction();
+        fetchOrganisationDetails();
       }
       setIsLoading(false);
     }

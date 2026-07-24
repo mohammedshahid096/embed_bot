@@ -1,21 +1,31 @@
 import { Link } from "react-router-dom";
-import { Bot, Sparkles, ArrowRight, Menu, X, Sun, Moon } from "lucide-react";
+import { Bot, Sparkles, ArrowRight, Menu, X, Sun, Moon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   initializeTheme,
   setTheme as saveTheme,
   applyThemeToDOM,
   type Theme,
 } from "@/helpers/theme.helper";
+import { getLoginToken } from "@/helpers/localstorage.helper";
+import { getSecondaryAccessToken } from "@/helpers/cookie.helper";
+import Context from "@/context/context";
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setThemeState] = useState<Theme>("dark");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { userProfileState: { profileDetails } } = useContext(Context);
 
   useEffect(() => {
     setThemeState(initializeTheme());
   }, []);
+
+  useEffect(() => {
+    const token = getLoginToken() || getSecondaryAccessToken();
+    setIsLoggedIn(Boolean(token) || Boolean(profileDetails));
+  }, [profileDetails]);
 
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
@@ -66,24 +76,38 @@ function Navbar() {
               <Moon className="h-4.5 w-4.5" />
             )}
           </button>
-          <Link to="/login">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Log in
-            </Button>
-          </Link>
-          <Link to="/signup">
-            <Button
-              size="sm"
-              className="bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-md shadow-violet-500/20 hover:from-violet-500 hover:to-blue-500 hover:shadow-violet-500/40"
-            >
-              Get Started
-              <Sparkles className="ml-1 h-3.5 w-3.5" />
-            </Button>
-          </Link>
+          {isLoggedIn ? (
+            <Link to="/dashboard">
+              <Button
+                size="sm"
+                className="bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-md shadow-violet-500/20 hover:from-violet-500 hover:to-blue-500 hover:shadow-violet-500/40"
+              >
+                Dashboard
+                <LayoutDashboard className="ml-1.5 h-3.5 w-3.5" />
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Log in
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button
+                  size="sm"
+                  className="bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-md shadow-violet-500/20 hover:from-violet-500 hover:to-blue-500 hover:shadow-violet-500/40"
+                >
+                  Get Started
+                  <Sparkles className="ml-1 h-3.5 w-3.5" />
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -128,20 +152,31 @@ function Navbar() {
               </a>
             ))}
             <hr className="my-2 border-white/5" />
-            <Link to="/login" onClick={() => setMobileOpen(false)}>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-muted-foreground"
-              >
-                Log in
-              </Button>
-            </Link>
-            <Link to="/signup" onClick={() => setMobileOpen(false)}>
-              <Button className="w-full bg-gradient-to-r from-violet-600 to-blue-600 text-white">
-                Get Started
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+              <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
+                <Button className="w-full bg-gradient-to-r from-violet-600 to-blue-600 text-white">
+                  Dashboard
+                  <LayoutDashboard className="ml-1.5 h-4 w-4" />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setMobileOpen(false)}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-muted-foreground"
+                  >
+                    Log in
+                  </Button>
+                </Link>
+                <Link to="/signup" onClick={() => setMobileOpen(false)}>
+                  <Button className="w-full bg-gradient-to-r from-violet-600 to-blue-600 text-white">
+                    Get Started
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

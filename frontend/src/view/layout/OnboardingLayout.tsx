@@ -16,25 +16,21 @@ const OnboardingLayout = ({ children }: OnboardingLayoutInitialProps) => {
   const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (
-      profileDetails?.organisationId &&
-      location.pathname === "/onboard/organisation-details"
-    ) {
-      navigate("/");
-    } else if (
-      organisationDetails?.onBoardingStage === "apiKeyAddition" &&
-      location.pathname === "/onboard/api-keys"
-    ) {
-      navigate("/");
-    } else if (
-      organisationDetails?.onBoardingStage === "websiteSetup" &&
-      location.pathname === "/onboard/website-urls"
-    ) {
-      navigate("/");
+    if (!profileDetails?.organisationId) {
+      setIsLoading(false);
+      navigate("/onboard/organisation-details");
+    } else if (organisationDetails?.onBoardingStage === "apiKeyAddition") {
+      navigate("/dashboard");
+    } else if (organisationDetails?.onBoardingStage === "organizationDetails") {
+      setIsLoading(false);
+      navigate("/onboard/website-urls");
+    } else if (organisationDetails?.onBoardingStage === "websiteSetup") {
+      setIsLoading(false);
+      navigate("/onboard/api-keys");
     } else {
       setIsLoading(false);
     }
-  }, [profileDetails, location.pathname]);
+  }, [profileDetails, organisationDetails?.onBoardingStage, location.pathname]);
 
   return isloading ? null : children;
 };

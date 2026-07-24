@@ -11,7 +11,7 @@ const OnboardingLayout = ({ children }: OnboardingLayoutInitialProps) => {
   const location = useLocation();
   const {
     userProfileState: { profileDetails },
-    organisationState: { apiKeyAdded },
+    organisationState: { organisationDetails },
   } = useContext(Context);
   const [isloading, setIsLoading] = useState(true);
 
@@ -21,14 +21,20 @@ const OnboardingLayout = ({ children }: OnboardingLayoutInitialProps) => {
       location.pathname === "/onboard/organisation-details"
     ) {
       navigate("/");
-    } else if (apiKeyAdded && location.pathname === "/onboard/api-keys") {
+    } else if (
+      organisationDetails?.onBoardingStage === "apiKeyAddition" &&
+      location.pathname === "/onboard/api-keys"
+    ) {
       navigate("/");
-    } else if (apiKeyAdded && location.pathname === "/onboard/website-urls") {
+    } else if (
+      organisationDetails?.onBoardingStage === "websiteSetup" &&
+      location.pathname === "/onboard/website-urls"
+    ) {
       navigate("/");
     } else {
       setIsLoading(false);
     }
-  }, [profileDetails, apiKeyAdded, location.pathname]);
+  }, [profileDetails, location.pathname]);
 
   return isloading ? null : children;
 };

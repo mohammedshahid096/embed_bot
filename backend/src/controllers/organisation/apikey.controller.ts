@@ -5,6 +5,7 @@ import { encrypt } from "../../utils/crypto.util";
 import ApiKeyModel, { ApiKeyInterface } from "../../schema/apikey.model";
 import httpErrors from "http-errors";
 import { AddOrganisationApiKeyBody } from "../../types/organisation/index.types";
+import OrganizationModel from "../../schema/organisation.model";
 
 export const addOrganisationApiKeyController = async (
   req: Request,
@@ -24,6 +25,10 @@ export const addOrganisationApiKeyController = async (
     if (isAlreadyExist) {
       return next(httpErrors.Conflict("Api Key Already Exist"));
     }
+
+    await OrganizationModel.findByIdAndUpdate(req?.organisation?._id, {
+      onBoardingStage: "apiKeyAddition",
+    });
 
     const newApiDetails: Partial<ApiKeyInterface> = {
       organisationId,

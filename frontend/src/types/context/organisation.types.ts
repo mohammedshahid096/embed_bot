@@ -16,11 +16,11 @@ export interface OrganisationDetailsInterface {
   contact: string;
   description: string;
   userId: string;
+  onBoardingStage: "organizationDetails" | "websiteSetup" | "apiKeyAddition";
   createdAt: string;
   updatedAt: string;
 }
 
 export interface OrganisationStateType {
   organisationDetails: OrganisationDetailsInterface | null;
-  apiKeyAdded: boolean;
 }

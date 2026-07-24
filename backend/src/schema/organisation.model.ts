@@ -17,6 +17,7 @@ export interface OrganizationInterface extends Document {
   contact: string;
   description: string;
   userId: mongoose.Types.ObjectId | UserInterface;
+  onBoardingStage: "organizationDetails" | "websiteSetup" | "apiKeyAddition";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,6 +41,11 @@ const organizationSchema = new Schema<OrganizationInterface>(
       minLength: 50,
       maxLength: 500,
       required: true,
+    },
+    onBoardingStage: {
+      type: String,
+      enum: ["organizationDetails", "websiteSetup", "apiKeyAddition"],
+      default: "organizationDetails",
     },
     userId: {
       type: Schema.Types.ObjectId,

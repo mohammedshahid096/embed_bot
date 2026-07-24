@@ -16,7 +16,6 @@ export const organisationReducer = (
       return {
         ...state,
         organisationDetails: action.payload?.data?.organistationDetails || null,
-        apiKeyAdded: action.payload?.data?.apiKeyDetails || false,
       };
 
     case organisationAction.UPDATE_ORGANISATION_STATE:

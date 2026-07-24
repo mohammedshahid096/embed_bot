@@ -9,7 +9,6 @@ import { CheerioWebsiteUrls } from "../../services/cheerio.service";
 import RabbitMQProducer from "../../services/rabitmq/producer.service";
 import CrawlJobModel from "../../schema/crawljob.model";
 import KnowledgeBaseModel from "../../schema/knowledgebase.model";
-import ApiKeyModel from "../../schema/apikey.model";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -51,16 +50,11 @@ export const getUserOrganisationDetailsController = async (
     const orgDetails = await OrganizationModel.findOne({ userId });
     if (!orgDetails) return next(httpErrors.NotFound("Organisation not found"));
 
-    const isApiIsAdded = await ApiKeyModel.findOne({
-      organisationId: orgDetails?._id,
-    })?.lean();
-
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "Organisation Details Fetched Successfully",
       data: {
         organistationDetails: orgDetails,
-        apiKeyDetails: Boolean(isApiIsAdded),
       },
     });
   } catch (error) {
@@ -100,6 +94,10 @@ export const scrapeWebsitesController = async (
     const organisationId = req?.organisation?._id;
 
     const { selectedUrls } = req.body as { selectedUrls: string[] };
+
+    await OrganizationModel.findByIdAndUpdate(req?.organisation?._id, {
+      onBoardingStage: "websiteSetup",
+    });
 
     const kbDocs = await KnowledgeBaseModel.insertMany(
       selectedUrls.map((url: string, index: number) => ({

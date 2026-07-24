@@ -6,7 +6,6 @@ import { getOrganisationDetailsApi } from "@/api/organisation.api";
 
 export const initialOrganisationState: OrganisationStateType = {
   organisationDetails: null,
-  apiKeyAdded: false,
 };
 
 export const useOrganisationState = () => {

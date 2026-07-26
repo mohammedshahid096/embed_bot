@@ -3,6 +3,7 @@ import { Embeddings } from "@langchain/core/embeddings";
 import config from "../config/index.config";
 import { embeddings_model_names } from "../constants/aimodel.constant";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import chromaClient from "../config/chroma.config";
 
 type EmbeddingsFor = "gemini" | "openai";
 interface ChromaServiceOptions {
@@ -36,13 +37,16 @@ class ChromaService {
   }
 
   async initialize(): Promise<Chroma | null> {
+    // console.log(this.vectorStore, this.collectionName, this.embeddings);
     if (!this.vectorStore && this.collectionName && this.embeddings) {
       this.vectorStore = new Chroma(this.embeddings, {
         collectionName: this.collectionName,
-        host: config.chromadb.CHROMA_HOST,
-        ssl: config.chromadb.CHROMA_SSL,
-        port: config.chromadb.CHROMA_PORT,
-      } as any);
+        clientParams: {
+          host: config.chromadb.CHROMA_HOST,
+          ssl: config.chromadb.CHROMA_SSL,
+          port: config.chromadb.CHROMA_PORT,
+        },
+      });
 
       await this.vectorStore.ensureCollection();
       console.log(
@@ -120,6 +124,22 @@ class ChromaService {
     } catch (error) {
       console.error("❌ Error emptying collection:", error);
       return false;
+    }
+  }
+
+  async listAllCollection(): Promise<
+    { collectionId: string; name: string }[] | null
+  > {
+    try {
+      const collections = await chromaClient.listCollections();
+
+      return collections.map((collection) => ({
+        collectionId: collection.id,
+        name: collection.name,
+      }));
+    } catch (error) {
+      console.error("❌ Error listing collections:", error);
+      return null;
     }
   }
 }

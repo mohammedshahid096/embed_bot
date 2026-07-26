@@ -80,7 +80,7 @@ const config: Config = {
   },
 
   redis: {
-    REDIS_URL: "redis://localhost:6379",
+    REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
     FLUSH_ALL: false,
   },
 
@@ -103,7 +103,7 @@ const config: Config = {
 
   chromadb: {
     CHROMA_HOST: process.env.CHROMA_HOST ?? "localhost",
-    CHROMA_PORT: Number(process.env.CHROMA_PORT ?? 8000),
+    CHROMA_PORT: Number(process.env.CHROMA_PORT ?? 6333),
     CHROMA_SSL: Boolean(process.env.CHROMA_SSL ?? false),
   },
 

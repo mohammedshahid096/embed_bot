@@ -1,7 +1,6 @@
 import { SitemapLoader } from "@langchain/community/document_loaders/web/sitemap";
 import { RecursiveUrlLoader } from "@langchain/community/document_loaders/web/recursive_url";
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
-import type { CheerioAPI } from "cheerio";
 
 export class CheerioWebsiteUrls {
   baseUrl: string;

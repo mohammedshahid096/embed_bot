@@ -1,4 +1,4 @@
-import { queueNames, queueJobs } from "../../constants/rabbitmq.constant";
+import { queueNames } from "../../constants/rabbitmq.constant";
 import { getRabbitMQChannel } from "../../config/rabitmq.config";
 import websiteScrapperHandler from "./handlers/websiteScrapper.handler";
 import { IWebsiteScrapperPayload } from "../../types/rabbitmq/payload.type";

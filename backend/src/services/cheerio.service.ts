@@ -1,6 +1,8 @@
 import { SitemapLoader } from "@langchain/community/document_loaders/web/sitemap";
 import { RecursiveUrlLoader } from "@langchain/community/document_loaders/web/recursive_url";
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { Document } from "@langchain/core/documents";
 
 export class CheerioWebsiteUrls {
   baseUrl: string;
@@ -92,14 +94,14 @@ export class CheerioWebsiteScrapping {
     this.url = url;
   }
 
-  private cleanContentFunction = (content: string) => {
+  private cleanContentFunction(content: string) {
     return content
       .replace(/\n{3,}/g, "\n\n")
       .replace(/\s{2,}/g, " ")
       .trim();
-  };
+  }
 
-  getPageContent = async () => {
+  async getPageContent(): Promise<string> {
     try {
       const loader = new CheerioWebBaseLoader(this.url, {
         selector: "body",
@@ -118,5 +120,44 @@ export class CheerioWebsiteScrapping {
       console.log(error);
       return "";
     }
-  };
+  }
+}
+
+export class CheerioTextSplitter {
+  private chunkSize: number;
+  private chunkOverlap: number;
+  constructor({
+    chunkSize = 500,
+    chunkOverlap = 100,
+  }: {
+    chunkSize?: number;
+    chunkOverlap?: number;
+  } = {}) {
+    this.chunkSize = chunkSize;
+    this.chunkOverlap = chunkOverlap;
+  }
+  async generateChunks(docs: Document[]): Promise<Document[]> {
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: this.chunkSize,
+      chunkOverlap: this.chunkOverlap,
+    });
+
+    const splitDocs = await splitter.splitDocuments(docs);
+    return splitDocs;
+  }
+
+  convertToDocument({
+    content,
+    source,
+  }: {
+    content: string;
+    source: string;
+  }): Document {
+    return new Document({
+      pageContent: content,
+      metadata: {
+        source: source,
+      },
+    });
+  }
 }

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Database, LogOut, Bot, User } from "lucide-react";
+import { LayoutDashboard, Database, LogOut, Bot, User, Building2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -26,6 +26,11 @@ const navigationItems = [
     title: "Knowledge Base",
     url: "/knowledge-base",
     icon: Database,
+  },
+  {
+    title: "Organisation Details",
+    url: "/organisation-details",
+    icon: Building2,
   },
 ];
 

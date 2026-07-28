@@ -5,10 +5,12 @@ import {
   getUserOrganisationDetailsController,
   onBoardingOrganisationController,
   scrapeWebsitesController,
+  updateUserOrganisationDetailsController,
 } from "../controllers/organisation/user-org.controller";
 import {
   onBoardingOrganisationValidation,
   scrapeWebsitesValidation,
+  updateOrganisationValidation,
 } from "../validation/organisation/user-org.joi";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
 import { addOrganisationApiKeyController } from "../controllers/organisation/apikey.controller";
@@ -26,7 +28,12 @@ userOrganisationRoutes
 
 userOrganisationRoutes
   .route("/details")
-  .get(Authentication, getUserOrganisationDetailsController);
+  .get(Authentication, getUserOrganisationDetailsController)
+  .put(
+    Authentication,
+    updateOrganisationValidation,
+    updateUserOrganisationDetailsController,
+  );
 
 userOrganisationRoutes
   .route("/extract-website-urls")

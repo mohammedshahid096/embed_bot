@@ -62,6 +62,43 @@ export const getUserOrganisationDetailsController = async (
   }
 };
 
+export const updateUserOrganisationDetailsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req?.authUser?._id;
+    const { name, email, address, contact, description } = req.body;
+
+    // Notice: website is explicitly excluded so it cannot be updated
+    const updatedOrg = await OrganizationModel.findOneAndUpdate(
+      { userId },
+      {
+        name,
+        email,
+        address,
+        contact,
+        description,
+      },
+      { new: true, runValidators: true },
+    );
+
+    if (!updatedOrg) {
+      return next(httpErrors.NotFound("Organisation not found"));
+    }
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Organisation Details Updated Successfully",
+      data: updatedOrg,
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+
 export const extractUserOrganisationWebsiteUrlsController = async (
   req: Request,
   res: Response,

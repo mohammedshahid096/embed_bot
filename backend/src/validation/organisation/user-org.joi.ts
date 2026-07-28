@@ -29,3 +29,23 @@ export const scrapeWebsitesValidation = celebrate({
       .label("Selected URLs"),
   }).required(),
 });
+
+export const updateOrganisationValidation = celebrate({
+  body: Joi.object({
+    name: Joi.string().min(2).max(50).required().label("Name"),
+    email: Joi.string().email().required().label("Email"),
+    address: Joi.object({
+      street: Joi.string().min(1).max(100).required().label("Street"),
+      city: Joi.string().min(1).max(50).required().label("City"),
+      state: Joi.string().min(1).max(50).required().label("State"),
+      country: Joi.string().min(1).max(50).required().label("Country"),
+      zipCode: Joi.string().min(1).max(20).required().label("Zip Code"),
+    })
+      .required()
+      .label("Address"),
+    contact: Joi.string().min(3).max(20).required().label("Contact"),
+    description: Joi.string().min(10).max(500).required().label("Description"),
+    website: Joi.string().optional().allow("").label("Website"),
+  }).required(),
+});
+

@@ -8,6 +8,7 @@ import ExtractWebsiteUrls from "../pages/onboard/ExtractWebsiteUrls";
 import AddApiKeys from "../pages/onboard/AddApiKeys";
 import ClientDashboardPage from "../pages/client/ClientDashboardPage";
 import KnowledgeBasePage from "../pages/client/KnowledgeBasePage";
+import OrganisationDetailsPage from "../pages/client/OrganisationDetailsPage";
 import AuthWrapper from "../layout/AuthWrapper";
 
 export interface RouteConfig {
@@ -72,8 +73,12 @@ export const routes: RouteConfig[] = [
       </AuthWrapper>
     ),
   },
-  // {
-  //   path: "*",
-  //   element: <NotFound />,
-  // },
+  {
+    path: "/organisation-details",
+    element: (
+      <AuthWrapper roles={["client"]}>
+        <OrganisationDetailsPage />
+      </AuthWrapper>
+    ),
+  },
 ];

@@ -13,8 +13,15 @@ import {
   updateOrganisationValidation,
 } from "../validation/organisation/user-org.joi";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
-import { addOrganisationApiKeyController } from "../controllers/organisation/apikey.controller";
-import { addOrganisationApiKeyValidation } from "../validation/organisation/apikey.joi";
+import {
+  addOrganisationApiKeyController,
+  getApiKeySummaryController,
+  updateSingleApiKeyController,
+} from "../controllers/organisation/apikey.controller";
+import {
+  addOrganisationApiKeyValidation,
+  updateSingleApiKeyValidation,
+} from "../validation/organisation/apikey.joi";
 
 const userOrganisationRoutes = Router();
 
@@ -61,4 +68,18 @@ userOrganisationRoutes
     addOrganisationApiKeyController,
   );
 
+userOrganisationRoutes
+  .route("/api-keys")
+  .get(Authentication, OrganisationMiddleware, getApiKeySummaryController);
+
+userOrganisationRoutes
+  .route("/api-keys/:provider")
+  .put(
+    Authentication,
+    OrganisationMiddleware,
+    updateSingleApiKeyValidation,
+    updateSingleApiKeyController,
+  );
+
 export default userOrganisationRoutes;
+

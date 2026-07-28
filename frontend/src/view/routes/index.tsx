@@ -9,6 +9,7 @@ import AddApiKeys from "../pages/onboard/AddApiKeys";
 import ClientDashboardPage from "../pages/client/ClientDashboardPage";
 import KnowledgeBasePage from "../pages/client/KnowledgeBasePage";
 import OrganisationDetailsPage from "../pages/client/OrganisationDetailsPage";
+import ApiKeysPage from "../pages/client/ApiKeysPage";
 import AuthWrapper from "../layout/AuthWrapper";
 
 export interface RouteConfig {
@@ -81,4 +82,13 @@ export const routes: RouteConfig[] = [
       </AuthWrapper>
     ),
   },
+  {
+    path: "/api-keys",
+    element: (
+      <AuthWrapper roles={["client"]}>
+        <ApiKeysPage />
+      </AuthWrapper>
+    ),
+  },
 ];
+

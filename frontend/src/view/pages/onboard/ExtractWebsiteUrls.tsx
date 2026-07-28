@@ -207,7 +207,7 @@ export default function ExtractWebsiteUrls() {
         );
         updateOrganisationStateAction({
           organisationDetails: {
-            ...organisationDetails,
+            ...organisationDetails!,
             onBoardingStage: "websiteSetup",
           },
         });

@@ -144,7 +144,7 @@ function CompanyDetails() {
         toast.success("Organisation details saved successfully!");
         updateOrganisationStateAction({
           organisationDetails: {
-            ...organisationDetails,
+            ...organisationDetails!,
             onBoardingStage: "organizationDetails",
           },
         });

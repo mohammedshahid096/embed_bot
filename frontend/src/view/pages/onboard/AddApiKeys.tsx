@@ -120,7 +120,7 @@ export default function AddApiKeys() {
       toast.success("API keys saved successfully!");
       updateOrganisationStateAction({
         organisationDetails: {
-          ...organisationDetails,
+          ...organisationDetails!,
           onBoardingStage: "apiKeyAddition",
         },
       });

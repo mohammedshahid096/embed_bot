@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import errorHandling, { AppError } from "../utils/errorHandling.util";
 import responseHandlingUtil from "../utils/responseHandling.util";
-// import ChromaService from "../services/chroma.service";
+import ChromaService from "../services/chroma.service";
 import {
   CheerioTextSplitter,
   CheerioWebsiteScrapping,
@@ -17,9 +17,9 @@ export const testingController = async (
       url: "https://teamvx.com",
     });
 
-    const cheerioTextSplitter = new CheerioTextSplitter();
-
     const pageContent = await cheerioService.getPageContent();
+
+    const cheerioTextSplitter = new CheerioTextSplitter();
 
     const document = cheerioTextSplitter.convertToDocument({
       content: pageContent,
@@ -29,7 +29,9 @@ export const testingController = async (
     let chunks = await cheerioTextSplitter.generateChunks([document]);
     console.log("chunks ------> ", chunks);
 
-    // const chromaService = new ChromaService({ collectionName: "testing" });
+    const chromaService = new ChromaService({ collectionName: "testing" });
+    await chromaService.insertToCollection(chunks);
+
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "testing response",

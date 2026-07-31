@@ -136,15 +136,6 @@ export class CheerioTextSplitter {
     this.chunkSize = chunkSize;
     this.chunkOverlap = chunkOverlap;
   }
-  async generateChunks(docs: Document[]): Promise<Document[]> {
-    const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: this.chunkSize,
-      chunkOverlap: this.chunkOverlap,
-    });
-
-    const splitDocs = await splitter.splitDocuments(docs);
-    return splitDocs;
-  }
 
   convertToDocument({
     content,
@@ -159,5 +150,15 @@ export class CheerioTextSplitter {
         source: source,
       },
     });
+  }
+
+  async generateChunks(docs: Document[]): Promise<Document[]> {
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: this.chunkSize,
+      chunkOverlap: this.chunkOverlap,
+    });
+
+    const splitDocs = await splitter.splitDocuments(docs);
+    return splitDocs;
   }
 }

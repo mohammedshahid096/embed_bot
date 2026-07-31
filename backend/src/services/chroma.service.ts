@@ -4,6 +4,7 @@ import config from "../config/index.config";
 import { embeddings_model_names } from "../constants/aimodel.constant";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import chromaClient from "../config/chroma.config";
+import { Document } from "@langchain/core/documents";
 
 type EmbeddingsFor = "gemini" | "openai";
 interface ChromaServiceOptions {
@@ -124,6 +125,63 @@ class ChromaService {
     } catch (error) {
       console.error("❌ Error emptying collection:", error);
       return false;
+    }
+  }
+
+  async insertToCollection(
+    chunks: Document[],
+  ): Promise<{ collectionCount: number } | null> {
+    try {
+      const vectorStore = await this.ensureVectorStore();
+
+      if (!this.embeddings) {
+        throw new Error("Embeddings not provided.");
+      }
+
+      const validChunks = chunks.filter(
+        (chunk) => chunk?.pageContent && chunk?.pageContent?.trim().length > 0,
+      );
+
+      console.log(`Embedding ${validChunks.length} chunks...`);
+
+      const vectors: number[][] = [];
+      const successfulChunks: Document[] = [];
+
+      for (let i = 0; i < validChunks.length; i++) {
+        try {
+          const chunk = validChunks[i]; // TypeScript now knows this is defined
+          console.log(`Processing chunk ${i + 1}/${validChunks.length}`);
+          const vector = await this.embeddings.embedQuery(chunk!.pageContent);
+          vectors.push(vector);
+          successfulChunks.push(chunk!);
+        } catch (error: any) {
+          console.log(`Error on chunk ${i}:`, error?.message);
+        }
+      }
+
+      console.log("Generated vectors count:", vectors.length);
+
+      if (vectors.length > 0) {
+        await vectorStore.addVectors(vectors, successfulChunks);
+        console.log(
+          `✅ Successfully inserted ${vectors.length} chunks into ChromaDB`,
+        );
+
+        const collection = await vectorStore.collection;
+        const count = await collection?.count();
+        console.log(`📊 Collection now has ${count} documents`);
+        return {
+          collectionCount: count ?? 0,
+        };
+      } else {
+        console.log("❌ No vectors were generated");
+        return {
+          collectionCount: 0,
+        };
+      }
+    } catch (error: any) {
+      console.error("error received -->", error?.message);
+      throw error;
     }
   }
 

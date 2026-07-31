@@ -4,9 +4,13 @@ import CrawlJobModel, {
   CrawlStatusCodes,
 } from "../../../schema/crawljob.model";
 import KnowledgeBaseModel from "../../../schema/knowledgebase.model";
-import { CheerioWebsiteScrapping } from "../../../services/cheerio.service";
+import {
+  CheerioTextSplitter,
+  CheerioWebsiteScrapping,
+} from "../../../services/cheerio.service";
 import OpenRouterService from "../../../services/open-router.service";
 import { IWebsiteScrapperPayload } from "../../../types/rabbitmq/payload.type";
+import ChromaService from "../../chroma.service";
 
 const websiteScrapperHandler = async (message: {
   job: string;
@@ -48,7 +52,27 @@ const websiteScrapperHandler = async (message: {
         await KnowledgeBaseModel.findByIdAndUpdate(knowledgeBaseId, {
           status: "ready",
           content: cleanedContent || content,
-          //  chunkCount: chunks.length,
+        });
+
+        const cheerioTextSplitter = new CheerioTextSplitter();
+
+        const document = cheerioTextSplitter.convertToDocument({
+          content: cleanedContent || content,
+          source: url,
+        });
+
+        const chunks = await cheerioTextSplitter.generateChunks([document]);
+
+        const chromaService = new ChromaService({
+          collectionName: `knowledge_base_${knowledgeBaseId}`,
+        });
+
+        const { collectionCount } =
+          await chromaService.insertToCollection(chunks);
+        console.log("collectionCount ------> ", collectionCount);
+
+        await KnowledgeBaseModel.findByIdAndUpdate(knowledgeBaseId, {
+          chunkCount: collectionCount,
         });
 
         newCrawlUpdatedData = await CrawlJobModel.findOneAndUpdate(

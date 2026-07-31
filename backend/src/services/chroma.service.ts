@@ -73,16 +73,22 @@ class ChromaService {
     count: number;
     collectionName: string;
     docIds: any;
+    documents: any;
+    metadatas: any;
   } | null> {
     try {
       const vectorStore = await this.ensureVectorStore();
       const collection = await vectorStore.collection;
-      const count = await collection?.count();
+
+      const count = (await collection?.count()) ?? 0;
       const docs = await collection?.get();
+
       return {
-        count: count ?? 0,
+        count,
         collectionName: this.collectionName,
         docIds: docs?.ids,
+        documents: docs?.documents,
+        metadatas: docs?.metadatas,
       };
     } catch (error) {
       console.error("Error getting collection info:", error);
@@ -130,7 +136,7 @@ class ChromaService {
 
   async insertToCollection(
     chunks: Document[],
-  ): Promise<{ collectionCount: number } | null> {
+  ): Promise<{ collectionCount: number }> {
     try {
       const vectorStore = await this.ensureVectorStore();
 

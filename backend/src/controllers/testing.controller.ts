@@ -7,7 +7,7 @@ import {
   CheerioWebsiteScrapping,
 } from "../services/cheerio.service";
 
-export const testingController = async (
+export const testingController2 = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -35,6 +35,25 @@ export const testingController = async (
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "testing response",
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+export const testingController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const chromaService = new ChromaService({ collectionName: "testing" });
+    const data = await chromaService?.getCollectionInfo();
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "testing response",
+      data,
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

@@ -16,6 +16,10 @@ export default function ChatSettingsPage() {
     setConfig((prev) => ({ ...prev, [key]: value }));
   };
 
+  const applyTheme = (themeConfig: Partial<ChatConfig>) => {
+    setConfig((prev) => ({ ...prev, ...themeConfig }));
+  };
+
   return (
     <ClientLayout>
       <div className="relative min-h-screen bg-background pb-16">
@@ -53,7 +57,11 @@ export default function ChatSettingsPage() {
           </div>
 
           {/* Settings Form */}
-          <ChatSettingsForm config={config} onConfigChange={updateConfig} />
+          <ChatSettingsForm
+            config={config}
+            onConfigChange={updateConfig}
+            onApplyTheme={applyTheme}
+          />
         </div>
 
         {/* Live Preview: floating ChatWidget */}

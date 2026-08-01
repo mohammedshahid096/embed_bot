@@ -12,6 +12,8 @@ import {
   MoveHorizontal,
   Maximize2,
   Edit3,
+  Sparkles,
+  Check,
 } from "lucide-react";
 import {
   Card,
@@ -20,7 +22,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ChatConfig } from "@/view/features/chat";
+import type { ChatConfig, ChatTheme } from "@/view/features/chat";
+import themesData from "../data/themes.json";
 
 const PRESET_COLORS = [
   "#7c3aed", // purple
@@ -49,11 +52,13 @@ interface ChatSettingsFormProps {
     key: K,
     value: ChatConfig[K],
   ) => void;
+  onApplyTheme?: (themeConfig: Partial<ChatConfig>) => void;
 }
 
 export default function ChatSettingsForm({
   config,
   onConfigChange,
+  onApplyTheme,
 }: ChatSettingsFormProps) {
   const renderColorPicker = (
     label: string,
@@ -157,6 +162,75 @@ export default function ChatSettingsForm({
 
   return (
     <div className="space-y-6">
+      {/* CARD 0: Preset Theme Templates */}
+      <Card className="border border-white/10 bg-card/60 shadow-xl backdrop-blur-xl dark:bg-card/40">
+        <CardHeader className="border-b border-white/5 pb-4">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-purple-400" />
+            Preset Theme Templates
+          </CardTitle>
+          <CardDescription>
+            Select a pre-configured theme template to instantly style your chatbot. All values will populate the controls below.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {(themesData as ChatTheme[]).map((theme) => {
+              const isSelected =
+                config.accentColor === theme.config.accentColor &&
+                (config.backgroundColor === theme.config.backgroundColor ||
+                  (!config.backgroundColor && theme.config.backgroundColor === "#ffffff"));
+
+              return (
+                <div
+                  key={theme.id}
+                  onClick={() => onApplyTheme?.(theme.config)}
+                  className={`group relative flex flex-col justify-between rounded-xl border p-4 cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${
+                    isSelected
+                      ? "border-purple-500 bg-purple-500/10 ring-1 ring-purple-500/30 shadow-purple-500/10"
+                      : "border-white/10 bg-background/50 hover:border-white/20 hover:bg-background/80"
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-foreground group-hover:text-purple-400 transition-colors">
+                        {theme.name}
+                      </span>
+                      {isSelected && (
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-white shadow-sm">
+                          <Check className="h-3 w-3" />
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground/80 leading-relaxed mb-3">
+                      {theme.description}
+                    </p>
+                  </div>
+
+                  {/* Swatches preview badges */}
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                    <div className="flex items-center gap-1.5">
+                      {theme.previewColors.map((color, idx) => (
+                        <div
+                          key={idx}
+                          className="h-5 w-5 rounded-full border border-white/20 shadow-sm"
+                          style={{ backgroundColor: color }}
+                          title={color}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[11px] font-medium text-purple-400 group-hover:underline">
+                      Apply →
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* CARD 1: Bot Identity & Content */}
       <Card className="border border-white/10 bg-card/60 shadow-xl backdrop-blur-xl dark:bg-card/40">
         <CardHeader className="border-b border-white/5 pb-4">

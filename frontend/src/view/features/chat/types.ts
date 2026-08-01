@@ -32,6 +32,14 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
+export interface ChatTheme {
+  id: string;
+  name: string;
+  description: string;
+  previewColors: string[];
+  config: Partial<ChatConfig>;
+}
+
 export const defaultChatConfig: ChatConfig = {
   botName: "Embed Bot",
   inputPlaceholder: "Type your message...",

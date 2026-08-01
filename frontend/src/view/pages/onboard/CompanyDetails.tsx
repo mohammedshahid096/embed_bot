@@ -121,47 +121,42 @@ function CompanyDetails() {
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
-    try {
-      // Find actual country name and state name for the payload
-      const countryName =
-        Country.getCountryByCode(data.address.country)?.name ||
-        data.address.country;
-      const stateName =
-        State.getStateByCodeAndCountry(data.address.state, data.address.country)
-          ?.name || data.address.state;
+    // Find actual country name and state name for the payload
+    const countryName =
+      Country.getCountryByCode(data.address.country)?.name ||
+      data.address.country;
+    const stateName =
+      State.getStateByCodeAndCountry(data.address.state, data.address.country)
+        ?.name || data.address.state;
 
-      const payload = {
-        ...data,
-        address: {
-          ...data.address,
-          country: countryName,
-          state: stateName,
+    const payload = {
+      ...data,
+      address: {
+        ...data.address,
+        country: countryName,
+        state: stateName,
+      },
+    };
+
+    const response = await createOrganisationDetailsApi(payload);
+    if (response[2] === 201) {
+      toast.success("Organisation details saved successfully!");
+      updateOrganisationStateAction({
+        organisationDetails: response[1]?.data,
+      });
+      updateUserprofileStateAction({
+        profileDetails: {
+          ...profileDetails!,
+          organisationId: response[1]?.data?._id,
         },
-      };
-
-      const response = await createOrganisationDetailsApi(payload);
-      if (response[2] === 201) {
-        toast.success("Organisation details saved successfully!");
-        updateOrganisationStateAction({
-          organisationDetails: response[1]?.data,
-        });
-        updateUserprofileStateAction({
-          profileDetails: {
-            ...profileDetails!,
-            organisationId: response[1]?.data?._id,
-          },
-        });
-        // setTimeout(() => {
-        navigate("/onboard/website-urls");
-        // }, 1000);
-      } else {
-        toast.error("Failed to save organisation details. Please try again.");
-      }
-    } catch (error) {
-      toast.error("Failed to save organisation details. Please try again.");
-    } finally {
-      setIsLoading(false);
+      });
+      navigate("/onboard/website-urls");
+    } else {
+      const errorMessage =
+        response?.[1]?.message || "An error occurred. Please try again.";
+      toast.error(errorMessage);
     }
+    setIsLoading(false);
   };
 
   return (

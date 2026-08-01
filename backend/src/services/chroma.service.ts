@@ -96,6 +96,41 @@ class ChromaService {
     }
   }
 
+  async getCollectionGroupedBySource(): Promise<Record<string, any[]> | null> {
+    try {
+      const vectorStore = await this.ensureVectorStore();
+      const collection = await vectorStore.collection;
+
+      const docs = await collection?.get();
+
+      if (!docs) return null;
+      const grouped = (docs?.metadatas || []).reduce(
+        (acc, metadata, index) => {
+          const source = metadata?.source;
+
+          if (!acc[source as string]) {
+            acc[source as string] = [];
+          }
+
+          acc[source as string].push({
+            id: docs.ids[index],
+            document: docs.documents[index],
+            metadata,
+          });
+
+          return acc;
+        },
+        {} as Record<string, any[]>,
+      );
+
+      // console.log(grouped);
+      return grouped;
+    } catch (error) {
+      console.error("Error getting collection info:", error);
+      return null;
+    }
+  }
+
   async deleteCollection(): Promise<boolean> {
     try {
       await this.ensureVectorStore();

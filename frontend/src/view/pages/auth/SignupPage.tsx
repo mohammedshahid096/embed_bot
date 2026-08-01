@@ -225,6 +225,7 @@ function SignupPage() {
                     onChange={handleChange}
                     className={`h-10 pl-9 ${errors.name ? "border-destructive ring-destructive/20" : ""}`}
                     aria-invalid={!!errors.name}
+                    tabIndex={1}
                   />
                 </div>
                 {errors.name && (
@@ -254,6 +255,7 @@ function SignupPage() {
                           : ""
                     }`}
                     aria-invalid={!!errors.email}
+                    tabIndex={2}
                   />
                   {/* Email status indicator */}
                   {emailStatus === "checking" && (
@@ -292,6 +294,7 @@ function SignupPage() {
                     onChange={handleChange}
                     className={`h-10 pl-9 pr-10 ${errors.password ? "border-destructive ring-destructive/20" : ""}`}
                     aria-invalid={!!errors.password}
+                    tabIndex={3}
                   />
                   <button
                     type="button"
@@ -300,6 +303,7 @@ function SignupPage() {
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
+                    tabIndex={-1}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -360,6 +364,7 @@ function SignupPage() {
                     onChange={handleChange}
                     className={`h-10 pl-9 pr-10 ${errors.confirmPassword ? "border-destructive ring-destructive/20" : ""}`}
                     aria-invalid={!!errors.confirmPassword}
+                    tabIndex={4}
                   />
                   <button
                     type="button"
@@ -370,6 +375,7 @@ function SignupPage() {
                         ? "Hide confirm password"
                         : "Show confirm password"
                     }
+                    tabIndex={-1}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -390,6 +396,7 @@ function SignupPage() {
               <Button
                 type="submit"
                 size="lg"
+                tabIndex={5}
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/25 transition-all duration-300 hover:from-purple-500 hover:to-blue-500 hover:shadow-purple-500/40 active:scale-[0.98]"
                 disabled={
                   isLoading ||

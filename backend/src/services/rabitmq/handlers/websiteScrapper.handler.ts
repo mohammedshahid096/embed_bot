@@ -20,7 +20,7 @@ const websiteScrapperHandler = async (message: {
 
   switch (job) {
     case queueJobs.website_scrapping:
-      console.log("Start scraping:", data);
+      console.log("Queue Job :", job, data);
       const crawlExist = await CrawlJobModel.findById(data.crawlJobId);
       if (!crawlExist) {
         console.log("Crawl job not found");

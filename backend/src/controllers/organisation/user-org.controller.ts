@@ -98,7 +98,6 @@ export const updateUserOrganisationDetailsController = async (
   }
 };
 
-
 export const extractUserOrganisationWebsiteUrlsController = async (
   req: Request,
   res: Response,

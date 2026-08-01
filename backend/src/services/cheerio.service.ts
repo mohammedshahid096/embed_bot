@@ -103,6 +103,7 @@ export class CheerioWebsiteScrapping {
 
   async getPageContent(): Promise<string> {
     try {
+      console.log("started scrapping from cheerio service", this.url);
       const loader = new CheerioWebBaseLoader(this.url, {
         selector: "body",
       });
@@ -114,6 +115,7 @@ export class CheerioWebsiteScrapping {
       $("*").removeAttr("style").removeAttr("class");
       let cleanContent = $.text();
       cleanContent = this.cleanContentFunction(cleanContent);
+      console.log("ended scrapping from cheerio service");
 
       return cleanContent;
     } catch (error) {

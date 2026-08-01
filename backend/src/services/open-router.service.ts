@@ -50,6 +50,7 @@ class OpenRouterService {
     },
   ): Promise<CleanContentOpenRouterResponse | null> {
     try {
+      console.log("started cleaning content from open router service");
       const result = await this.openRouter.chat.send({
         chatRequest: {
           temperature: 0,
@@ -91,6 +92,7 @@ class OpenRouterService {
         },
         result: chatResult,
       };
+      console.log("ended cleaning content from open router service");
 
       return response;
     } catch (error) {

@@ -50,7 +50,7 @@ export const testingController = async (
 ) => {
   try {
     const chromaService = new ChromaService({
-      collectionName: "knowledge_base_6a6dc3652cbd4148c3641551",
+      collectionName: "knowledge_base_6a6dd661293e0fd8477aa5ed",
     });
     const data = await chromaService?.getCollectionGroupedBySource();
 

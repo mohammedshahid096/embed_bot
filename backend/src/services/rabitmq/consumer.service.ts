@@ -18,8 +18,7 @@ class RabbitMQConsumer {
           job: string;
           data: IWebsiteScrapperPayload;
         };
-        const response = await websiteScrapperHandler(content);
-        console.log(response);
+        await websiteScrapperHandler(content);
 
         channel.ack(msg);
       } catch (error) {

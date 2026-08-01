@@ -136,7 +136,7 @@ class ChromaService {
 
   async insertToCollection(
     chunks: Document[],
-  ): Promise<{ collectionCount: number }> {
+  ): Promise<{ collectionCount: number; chunkCount: number }> {
     try {
       const vectorStore = await this.ensureVectorStore();
 
@@ -178,11 +178,13 @@ class ChromaService {
         console.log(`📊 Collection now has ${count} documents`);
         return {
           collectionCount: count ?? 0,
+          chunkCount: successfulChunks.length,
         };
       } else {
         console.log("❌ No vectors were generated");
         return {
           collectionCount: 0,
+          chunkCount: 0,
         };
       }
     } catch (error: any) {
@@ -204,6 +206,31 @@ class ChromaService {
     } catch (error) {
       console.error("❌ Error listing collections:", error);
       return null;
+    }
+  }
+
+  async query(queryText: string, nResults: number = 5): Promise<Document[]> {
+    try {
+      const vectorStore = await this.ensureVectorStore();
+      const results = await vectorStore.similaritySearch(queryText, nResults);
+      return results;
+    } catch (error) {
+      console.error("❌ Error querying collection:", error);
+      return [];
+    }
+  }
+
+  async deleteWebsiteChunksByUrl(url: string): Promise<boolean> {
+    try {
+      const vectorStore = await this.ensureVectorStore();
+      const collection = await vectorStore.collection;
+      await collection?.delete({
+        where: { source: url },
+      });
+      return true;
+    } catch (error) {
+      console.error("❌ Error deleting website chunks by URL:", error);
+      return false;
     }
   }
 }

@@ -140,14 +140,24 @@ export class CheerioTextSplitter {
   convertToDocument({
     content,
     source,
+    knowledgeBaseId,
+    organisationId,
+    type,
   }: {
     content: string;
     source: string;
+    knowledgeBaseId: string;
+    organisationId: string;
+    type: "website" | "text";
   }): Document {
     return new Document({
       pageContent: content,
       metadata: {
+        knowledgeBaseId,
+        organisationId,
         source: source,
+        website: type === "website" ? new URL(source).hostname : "",
+        type,
       },
     });
   }

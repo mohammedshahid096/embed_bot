@@ -32,7 +32,7 @@ const websiteScrapperHandler = async (message: {
           { $set: { status: "running" } },
         );
       }
-      const { url, crawlJobId, knowledgeBaseId } = data;
+      const { url, crawlJobId, knowledgeBaseId, organisationId } = data;
 
       const cheerioWebsiteUrlService = new CheerioWebsiteScrapping({
         url,
@@ -59,20 +59,22 @@ const websiteScrapperHandler = async (message: {
         const document = cheerioTextSplitter.convertToDocument({
           content: cleanedContent || content,
           source: url,
+          organisationId,
+          knowledgeBaseId,
+          type: "website",
         });
 
         const chunks = await cheerioTextSplitter.generateChunks([document]);
 
         const chromaService = new ChromaService({
-          collectionName: `knowledge_base_${knowledgeBaseId}`,
+          collectionName: `knowledge_base_${organisationId}`,
         });
 
-        const { collectionCount } =
-          await chromaService.insertToCollection(chunks);
-        console.log("collectionCount ------> ", collectionCount);
+        const { chunkCount } = await chromaService.insertToCollection(chunks);
+        console.log("chunkCount ------> ", chunkCount);
 
         await KnowledgeBaseModel.findByIdAndUpdate(knowledgeBaseId, {
-          chunkCount: collectionCount,
+          chunkCount: chunkCount,
         });
 
         newCrawlUpdatedData = await CrawlJobModel.findOneAndUpdate(

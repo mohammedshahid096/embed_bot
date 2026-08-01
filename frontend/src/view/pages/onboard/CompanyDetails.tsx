@@ -47,8 +47,10 @@ type FormData = z.infer<typeof schema>;
 function CompanyDetails() {
   const navigate = useNavigate();
   const {
-    organisationState: { updateOrganisationStateAction, organisationDetails },
+    organisationState: { updateOrganisationStateAction },
+    userProfileState: { updateUserprofileStateAction, profileDetails },
   } = useContext(Context);
+
   const [isLoading, setIsLoading] = useState(false);
 
   // States for country-state-city dropdowns
@@ -137,18 +139,21 @@ function CompanyDetails() {
         },
       };
 
-      console.log("Submitting Onboarding Payload:", payload);
-
       const response = await createOrganisationDetailsApi(payload);
       if (response[2] === 201) {
         toast.success("Organisation details saved successfully!");
         updateOrganisationStateAction({
-          organisationDetails: {
-            ...organisationDetails!,
-            onBoardingStage: "organizationDetails",
+          organisationDetails: response[1]?.data,
+        });
+        updateUserprofileStateAction({
+          profileDetails: {
+            ...profileDetails!,
+            organisationId: response[1]?.data?._id,
           },
         });
+        // setTimeout(() => {
         navigate("/onboard/website-urls");
+        // }, 1000);
       } else {
         toast.error("Failed to save organisation details. Please try again.");
       }

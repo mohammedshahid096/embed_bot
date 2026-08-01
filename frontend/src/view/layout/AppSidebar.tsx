@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Database, LogOut, Bot, User, Building2, KeyRound } from "lucide-react";
+import { LayoutDashboard, Database, LogOut, Bot, User, Building2, KeyRound, MessageSquare } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -36,6 +36,11 @@ const navigationItems = [
     title: "API Keys",
     url: "/api-keys",
     icon: KeyRound,
+  },
+  {
+    title: "Chat Widget",
+    url: "/chat-settings",
+    icon: MessageSquare,
   },
 ];
 

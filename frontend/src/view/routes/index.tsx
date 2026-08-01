@@ -10,6 +10,7 @@ import ClientDashboardPage from "../pages/client/ClientDashboardPage";
 import KnowledgeBasePage from "../pages/client/KnowledgeBasePage";
 import OrganisationDetailsPage from "../pages/client/OrganisationDetailsPage";
 import ApiKeysPage from "../pages/client/ApiKeysPage";
+import ChatSettingsPage from "../pages/client/ChatSettingsPage";
 import AuthWrapper from "../layout/AuthWrapper";
 
 export interface RouteConfig {
@@ -90,5 +91,12 @@ export const routes: RouteConfig[] = [
       </AuthWrapper>
     ),
   },
+  {
+    path: "/chat-settings",
+    element: (
+      <AuthWrapper roles={["client"]}>
+        <ChatSettingsPage />
+      </AuthWrapper>
+    ),
+  },
 ];
-

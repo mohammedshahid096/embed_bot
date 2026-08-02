@@ -22,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ChatConfig, ChatTheme } from "@/view/features/chat";
+import type { ChatConfig, ChatTheme, DeepPartial } from "@/view/features/chat";
 import themesData from "../data/themes.json";
 
 const PRESET_COLORS = [
@@ -48,11 +48,12 @@ const BORDER_RADIUS_PRESETS = [
 
 interface ChatSettingsFormProps {
   config: ChatConfig;
-  onConfigChange: <K extends keyof ChatConfig>(
-    key: K,
-    value: ChatConfig[K],
+  onConfigChange: <G extends keyof ChatConfig>(
+    group: G,
+    key: keyof ChatConfig[G],
+    value: string | number,
   ) => void;
-  onApplyTheme?: (themeConfig: Partial<ChatConfig>) => void;
+  onApplyTheme?: (themeConfig: DeepPartial<ChatConfig>) => void;
 }
 
 export default function ChatSettingsForm({
@@ -60,9 +61,10 @@ export default function ChatSettingsForm({
   onConfigChange,
   onApplyTheme,
 }: ChatSettingsFormProps) {
-  const renderColorPicker = (
+  const renderColorPicker = <G extends keyof ChatConfig>(
     label: string,
-    key: keyof ChatConfig,
+    group: G,
+    key: keyof ChatConfig[G] & string,
     value: string,
     placeholder: string,
     helperText: string,
@@ -83,7 +85,7 @@ export default function ChatSettingsForm({
               <button
                 key={color}
                 type="button"
-                onClick={() => onConfigChange(key, color as any)}
+                onClick={() => onConfigChange(group, key, color)}
                 className="relative h-8 w-8 rounded-lg border border-white/20 transition-all duration-150 hover:scale-110 focus:outline-none"
                 style={{
                   backgroundColor: color,
@@ -123,7 +125,7 @@ export default function ChatSettingsForm({
             <input
               type="color"
               value={value || "#7c3aed"}
-              onChange={(e) => onConfigChange(key, e.target.value as any)}
+              onChange={(e) => onConfigChange(group, key, e.target.value)}
               className="h-10 w-10 cursor-pointer rounded-lg border border-input bg-transparent p-0.5"
             />
           </div>
@@ -133,7 +135,7 @@ export default function ChatSettingsForm({
             onChange={(e) => {
               const val = e.target.value;
               if (/^#[0-9A-Fa-f]{0,6}$/.test(val) || val === "") {
-                onConfigChange(key, val as any);
+                onConfigChange(group, key, val);
               }
             }}
             placeholder={placeholder}
@@ -178,9 +180,9 @@ export default function ChatSettingsForm({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {(themesData as ChatTheme[]).map((theme) => {
               const isSelected =
-                config.accentColor === theme.config.accentColor &&
-                (config.backgroundColor === theme.config.backgroundColor ||
-                  (!config.backgroundColor && theme.config.backgroundColor === "#ffffff"));
+                config.theme.accentColor === theme.config.theme?.accentColor &&
+                (config.theme.backgroundColor === theme.config.theme?.backgroundColor ||
+                  (!config.theme.backgroundColor && theme.config.theme?.backgroundColor === "#ffffff"));
 
               return (
                 <div
@@ -252,8 +254,8 @@ export default function ChatSettingsForm({
             </label>
             <input
               type="text"
-              value={config.botName}
-              onChange={(e) => onConfigChange("botName", e.target.value)}
+              value={config.general.botName}
+              onChange={(e) => onConfigChange("general", "botName", e.target.value)}
               placeholder="My Chatbot"
               className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition-colors"
             />
@@ -270,8 +272,8 @@ export default function ChatSettingsForm({
             </label>
             <input
               type="text"
-              value={config.welcomeMessage}
-              onChange={(e) => onConfigChange("welcomeMessage", e.target.value)}
+              value={config.general.welcomeMessage}
+              onChange={(e) => onConfigChange("general", "welcomeMessage", e.target.value)}
               placeholder="Hello! How can I help you today?"
               className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition-colors"
             />
@@ -288,9 +290,9 @@ export default function ChatSettingsForm({
             </label>
             <input
               type="text"
-              value={config.inputPlaceholder}
+              value={config.general.inputPlaceholder}
               onChange={(e) =>
-                onConfigChange("inputPlaceholder", e.target.value)
+                onConfigChange("general", "inputPlaceholder", e.target.value)
               }
               placeholder="Type your message..."
               className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring transition-colors"
@@ -318,8 +320,9 @@ export default function ChatSettingsForm({
           {/* Accent Color */}
           {renderColorPicker(
             "Accent Color",
+            "theme",
             "accentColor",
-            config.accentColor,
+            config.theme.accentColor,
             "#7c3aed",
             "Applied to the chat header and default highlights.",
             <Palette className="h-4 w-4 text-purple-400" />,
@@ -328,8 +331,9 @@ export default function ChatSettingsForm({
           {/* Background Color */}
           {renderColorPicker(
             "Widget Background Color",
+            "theme",
             "backgroundColor",
-            config.backgroundColor,
+            config.theme.backgroundColor,
             "#ffffff",
             "Background color of the chat popup window.",
             <Paintbrush className="h-4 w-4 text-purple-400" />,
@@ -338,8 +342,9 @@ export default function ChatSettingsForm({
           {/* General Text Color */}
           {renderColorPicker(
             "General Text Color",
+            "theme",
             "textColor",
-            config.textColor,
+            config.theme.textColor,
             "Default theme",
             "General text color across the chatbot window.",
             <Type className="h-4 w-4 text-purple-400" />,
@@ -348,8 +353,9 @@ export default function ChatSettingsForm({
           {/* Widget Border Color */}
           {renderColorPicker(
             "Widget Border Color",
+            "theme",
             "borderColor",
-            config.borderColor,
+            config.theme.borderColor,
             "Default border",
             "Border color around the chat popup window.",
             <Square className="h-4 w-4 text-purple-400" />,
@@ -363,7 +369,7 @@ export default function ChatSettingsForm({
                 Border Radius
               </label>
               <span className="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
-                {config.borderRadius}px
+                {config.theme.borderRadius}px
               </span>
             </div>
 
@@ -373,9 +379,9 @@ export default function ChatSettingsForm({
                 <button
                   key={preset.value}
                   type="button"
-                  onClick={() => onConfigChange("borderRadius", preset.value)}
+                  onClick={() => onConfigChange("theme", "borderRadius", preset.value)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
-                    config.borderRadius === preset.value
+                    config.theme.borderRadius === preset.value
                       ? "bg-purple-600 text-white border-purple-500 shadow-sm"
                       : "bg-background border-input text-muted-foreground hover:text-foreground hover:border-muted-foreground"
                   }`}
@@ -392,9 +398,9 @@ export default function ChatSettingsForm({
                 min={0}
                 max={32}
                 step={1}
-                value={config.borderRadius}
+                value={config.theme.borderRadius}
                 onChange={(e) =>
-                  onConfigChange("borderRadius", Number(e.target.value))
+                  onConfigChange("theme", "borderRadius", Number(e.target.value))
                 }
                 className="flex-1 accent-purple-600 h-2 bg-muted rounded-lg cursor-pointer"
               />
@@ -402,9 +408,10 @@ export default function ChatSettingsForm({
                 type="number"
                 min={0}
                 max={32}
-                value={config.borderRadius}
+                value={config.theme.borderRadius}
                 onChange={(e) =>
                   onConfigChange(
+                    "theme",
                     "borderRadius",
                     Math.min(32, Math.max(0, Number(e.target.value))),
                   )
@@ -435,8 +442,9 @@ export default function ChatSettingsForm({
           {/* Button Background Color */}
           {renderColorPicker(
             "Button Background Color",
-            "buttonBgColor",
-            config.buttonBgColor,
+            "button",
+            "bgColor",
+            config.button.bgColor,
             "Default accent color",
             "Background color for the floating launcher button & send button.",
             <MousePointerClick className="h-4 w-4 text-purple-400" />,
@@ -445,8 +453,9 @@ export default function ChatSettingsForm({
           {/* Button Icon / Text Color */}
           {renderColorPicker(
             "Button Icon Color",
-            "buttonTextColor",
-            config.buttonTextColor,
+            "button",
+            "textColor",
+            config.button.textColor,
             "#ffffff",
             "Icon and text color inside action buttons.",
             <MousePointerClick className="h-4 w-4 text-purple-400" />,
@@ -460,7 +469,7 @@ export default function ChatSettingsForm({
                 Button Border Radius
               </label>
               <span className="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
-                {config.buttonBorderRadius ?? 28}px
+                {config.button.borderRadius ?? 28}px
               </span>
             </div>
 
@@ -476,9 +485,9 @@ export default function ChatSettingsForm({
                 <button
                   key={preset.value}
                   type="button"
-                  onClick={() => onConfigChange("buttonBorderRadius", preset.value)}
+                  onClick={() => onConfigChange("button", "borderRadius", preset.value)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
-                    (config.buttonBorderRadius ?? 28) === preset.value
+                    (config.button.borderRadius ?? 28) === preset.value
                       ? "bg-purple-600 text-white border-purple-500 shadow-sm"
                       : "bg-background border-input text-muted-foreground hover:text-foreground hover:border-muted-foreground"
                   }`}
@@ -495,9 +504,9 @@ export default function ChatSettingsForm({
                 min={0}
                 max={32}
                 step={1}
-                value={config.buttonBorderRadius ?? 28}
+                value={config.button.borderRadius ?? 28}
                 onChange={(e) =>
-                  onConfigChange("buttonBorderRadius", Number(e.target.value))
+                  onConfigChange("button", "borderRadius", Number(e.target.value))
                 }
                 className="flex-1 accent-purple-600 h-2 bg-muted rounded-lg cursor-pointer"
               />
@@ -505,10 +514,11 @@ export default function ChatSettingsForm({
                 type="number"
                 min={0}
                 max={32}
-                value={config.buttonBorderRadius ?? 28}
+                value={config.button.borderRadius ?? 28}
                 onChange={(e) =>
                   onConfigChange(
-                    "buttonBorderRadius",
+                    "button",
+                    "borderRadius",
                     Math.min(32, Math.max(0, Number(e.target.value))),
                   )
                 }
@@ -528,7 +538,7 @@ export default function ChatSettingsForm({
                 Button Width
               </label>
               <span className="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
-                {config.buttonWidth || 56}px
+                {config.button.width || 56}px
               </span>
             </div>
 
@@ -543,9 +553,9 @@ export default function ChatSettingsForm({
                 <button
                   key={preset.value}
                   type="button"
-                  onClick={() => onConfigChange("buttonWidth", preset.value)}
+                  onClick={() => onConfigChange("button", "width", preset.value)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
-                    (config.buttonWidth || 56) === preset.value
+                    (config.button.width || 56) === preset.value
                       ? "bg-purple-600 text-white border-purple-500 shadow-sm"
                       : "bg-background border-input text-muted-foreground hover:text-foreground hover:border-muted-foreground"
                   }`}
@@ -562,9 +572,9 @@ export default function ChatSettingsForm({
                 min={56}
                 max={200}
                 step={4}
-                value={config.buttonWidth || 56}
+                value={config.button.width || 56}
                 onChange={(e) =>
-                  onConfigChange("buttonWidth", Number(e.target.value))
+                  onConfigChange("button", "width", Number(e.target.value))
                 }
                 className="flex-1 accent-purple-600 h-2 bg-muted rounded-lg cursor-pointer"
               />
@@ -572,10 +582,11 @@ export default function ChatSettingsForm({
                 type="number"
                 min={56}
                 max={200}
-                value={config.buttonWidth || 56}
+                value={config.button.width || 56}
                 onChange={(e) =>
                   onConfigChange(
-                    "buttonWidth",
+                    "button",
+                    "width",
                     Math.min(200, Math.max(56, Number(e.target.value))),
                   )
                 }
@@ -595,7 +606,7 @@ export default function ChatSettingsForm({
                 Button Max Width Limit
               </label>
               <span className="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
-                {config.buttonMaxWidth || 160}px
+                {config.button.maxWidth || 160}px
               </span>
             </div>
 
@@ -610,9 +621,9 @@ export default function ChatSettingsForm({
                 <button
                   key={preset.value}
                   type="button"
-                  onClick={() => onConfigChange("buttonMaxWidth", preset.value)}
+                  onClick={() => onConfigChange("button", "maxWidth", preset.value)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
-                    (config.buttonMaxWidth || 160) === preset.value
+                    (config.button.maxWidth || 160) === preset.value
                       ? "bg-purple-600 text-white border-purple-500 shadow-sm"
                       : "bg-background border-input text-muted-foreground hover:text-foreground hover:border-muted-foreground"
                   }`}
@@ -629,9 +640,9 @@ export default function ChatSettingsForm({
                 min={100}
                 max={240}
                 step={10}
-                value={config.buttonMaxWidth || 160}
+                value={config.button.maxWidth || 160}
                 onChange={(e) =>
-                  onConfigChange("buttonMaxWidth", Number(e.target.value))
+                  onConfigChange("button", "maxWidth", Number(e.target.value))
                 }
                 className="flex-1 accent-purple-600 h-2 bg-muted rounded-lg cursor-pointer"
               />
@@ -639,10 +650,11 @@ export default function ChatSettingsForm({
                 type="number"
                 min={100}
                 max={240}
-                value={config.buttonMaxWidth || 160}
+                value={config.button.maxWidth || 160}
                 onChange={(e) =>
                   onConfigChange(
-                    "buttonMaxWidth",
+                    "button",
+                    "maxWidth",
                     Math.min(240, Math.max(100, Number(e.target.value))),
                   )
                 }
@@ -672,8 +684,9 @@ export default function ChatSettingsForm({
           {/* Input Background Color */}
           {renderColorPicker(
             "Input Background Color",
-            "inputBgColor",
-            config.inputBgColor,
+            "input",
+            "bgColor",
+            config.input.bgColor,
             "Default background",
             "Background color of the message input box.",
             <Paintbrush className="h-4 w-4 text-purple-400" />,
@@ -682,8 +695,9 @@ export default function ChatSettingsForm({
           {/* Input Text Color */}
           {renderColorPicker(
             "Input Text Color",
-            "inputTextColor",
-            config.inputTextColor,
+            "input",
+            "textColor",
+            config.input.textColor,
             "Default text color",
             "Text color inside the message input box.",
             <Type className="h-4 w-4 text-purple-400" />,
@@ -692,8 +706,9 @@ export default function ChatSettingsForm({
           {/* Input Border Color */}
           {renderColorPicker(
             "Input Border Color",
-            "inputBorderColor",
-            config.inputBorderColor,
+            "input",
+            "borderColor",
+            config.input.borderColor,
             "Default border",
             "Border color around the message input box.",
             <Square className="h-4 w-4 text-purple-400" />,
@@ -707,7 +722,7 @@ export default function ChatSettingsForm({
                 Input Border Radius
               </label>
               <span className="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
-                {config.inputBorderRadius ?? 12}px
+                {config.input.borderRadius ?? 12}px
               </span>
             </div>
 
@@ -723,9 +738,9 @@ export default function ChatSettingsForm({
                 <button
                   key={preset.value}
                   type="button"
-                  onClick={() => onConfigChange("inputBorderRadius", preset.value)}
+                  onClick={() => onConfigChange("input", "borderRadius", preset.value)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
-                    (config.inputBorderRadius ?? 12) === preset.value
+                    (config.input.borderRadius ?? 12) === preset.value
                       ? "bg-purple-600 text-white border-purple-500 shadow-sm"
                       : "bg-background border-input text-muted-foreground hover:text-foreground hover:border-muted-foreground"
                   }`}
@@ -742,9 +757,9 @@ export default function ChatSettingsForm({
                 min={0}
                 max={24}
                 step={1}
-                value={config.inputBorderRadius ?? 12}
+                value={config.input.borderRadius ?? 12}
                 onChange={(e) =>
-                  onConfigChange("inputBorderRadius", Number(e.target.value))
+                  onConfigChange("input", "borderRadius", Number(e.target.value))
                 }
                 className="flex-1 accent-purple-600 h-2 bg-muted rounded-lg cursor-pointer"
               />
@@ -752,10 +767,11 @@ export default function ChatSettingsForm({
                 type="number"
                 min={0}
                 max={24}
-                value={config.inputBorderRadius ?? 12}
+                value={config.input.borderRadius ?? 12}
                 onChange={(e) =>
                   onConfigChange(
-                    "inputBorderRadius",
+                    "input",
+                    "borderRadius",
                     Math.min(24, Math.max(0, Number(e.target.value))),
                   )
                 }
@@ -785,8 +801,9 @@ export default function ChatSettingsForm({
           {/* Bot Message Text Color */}
           {renderColorPicker(
             "Bot Message Text Color",
-            "botMessageTextColor",
-            config.botMessageTextColor,
+            "messages",
+            "botTextColor",
+            config.messages.botTextColor,
             "Default theme",
             "Custom text color specifically for bot responses.",
             <Bot className="h-4 w-4 text-purple-400" />,
@@ -795,8 +812,9 @@ export default function ChatSettingsForm({
           {/* Bot Message Background Color */}
           {renderColorPicker(
             "Bot Message Background Color",
-            "botMessageBgColor",
-            config.botMessageBgColor,
+            "messages",
+            "botBgColor",
+            config.messages.botBgColor,
             "Default soft gray",
             "Custom background color for bot response bubbles.",
             <Bot className="h-4 w-4 text-purple-400" />,
@@ -805,8 +823,9 @@ export default function ChatSettingsForm({
           {/* User Message Background Color */}
           {renderColorPicker(
             "Human Response Background Color",
-            "userMessageBgColor",
-            config.userMessageBgColor,
+            "messages",
+            "userBgColor",
+            config.messages.userBgColor,
             "Default accent color",
             "Custom background color for human / user message bubbles.",
             <User className="h-4 w-4 text-purple-400" />,
@@ -815,8 +834,9 @@ export default function ChatSettingsForm({
           {/* User Message Text Color */}
           {renderColorPicker(
             "Human Response Text Color",
-            "userMessageTextColor",
-            config.userMessageTextColor,
+            "messages",
+            "userTextColor",
+            config.messages.userTextColor,
             "#ffffff",
             "Custom text color for human / user message bubbles.",
             <User className="h-4 w-4 text-purple-400" />,

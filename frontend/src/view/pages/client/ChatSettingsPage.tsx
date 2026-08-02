@@ -2,22 +2,29 @@ import { useState } from "react";
 import { MessageSquare } from "lucide-react";
 import ClientLayout from "@/view/layout/ClientLayout";
 import { ChatWidget } from "@/view/features/chat";
-import type { ChatConfig } from "@/view/features/chat";
-import { defaultChatConfig } from "@/view/features/chat";
+import type { ChatConfig, DeepPartial } from "@/view/features/chat";
+import { defaultChatConfig, deepMergeChatConfig } from "@/view/features/chat";
 import ChatSettingsForm from "@/view/features/chat/components/ChatSettingsForm";
 
 export default function ChatSettingsPage() {
   const [config, setConfig] = useState<ChatConfig>({ ...defaultChatConfig });
 
-  const updateConfig = <K extends keyof ChatConfig>(
-    key: K,
-    value: ChatConfig[K],
+  const updateConfig = <G extends keyof ChatConfig>(
+    group: G,
+    key: keyof ChatConfig[G],
+    value: string | number,
   ) => {
-    setConfig((prev) => ({ ...prev, [key]: value }));
+    setConfig((prev) => ({
+      ...prev,
+      [group]: {
+        ...prev[group],
+        [key]: value,
+      },
+    }));
   };
 
-  const applyTheme = (themeConfig: Partial<ChatConfig>) => {
-    setConfig((prev) => ({ ...prev, ...themeConfig }));
+  const applyTheme = (themeConfig: DeepPartial<ChatConfig>) => {
+    setConfig((prev) => deepMergeChatConfig(prev, themeConfig));
   };
 
   return (

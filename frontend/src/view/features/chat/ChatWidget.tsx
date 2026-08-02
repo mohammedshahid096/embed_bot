@@ -1,13 +1,14 @@
 import { useState, useCallback } from "react";
 import type { ChatConfig, ChatMessage } from "./types";
-import { defaultChatConfig } from "./types";
+import { defaultChatConfig, deepMergeChatConfig } from "./types";
+import type { DeepPartial } from "./types";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessageList from "./components/ChatMessageList";
 import ChatInput from "./components/ChatInput";
 import ChatTrigger from "./components/ChatTrigger";
 
 interface ChatWidgetProps {
-  config?: Partial<ChatConfig>;
+  config?: DeepPartial<ChatConfig>;
   isPopupOpen?: boolean;
   isClient?: boolean;
 }
@@ -17,7 +18,10 @@ export default function ChatWidget({
   isPopupOpen = false,
   // isClient = true,
 }: ChatWidgetProps) {
-  const config: ChatConfig = { ...defaultChatConfig, ...configOverrides };
+  const config: ChatConfig = deepMergeChatConfig(
+    defaultChatConfig,
+    configOverrides,
+  );
 
   const [isOpen, setIsOpen] = useState(isPopupOpen);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -37,13 +41,13 @@ export default function ChatWidget({
         const botMessage: ChatMessage = {
           id: `bot-${Date.now()}`,
           role: "bot",
-          content: `Thanks for your message! This is a placeholder reply from ${config.botName}.`,
+          content: `Thanks for your message! This is a placeholder reply from ${config.general.botName}.`,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, botMessage]);
       }, 800);
     },
-    [config.botName],
+    [config.general.botName],
   );
 
   return (
@@ -55,10 +59,10 @@ export default function ChatWidget({
           style={{
             width: "380px",
             height: "520px",
-            ...(config.backgroundColor ? { backgroundColor: config.backgroundColor } : {}),
-            ...(config.textColor ? { color: config.textColor } : {}),
-            ...(config.borderColor ? { borderColor: config.borderColor } : {}),
-            borderRadius: `${config.borderRadius}px`,
+            ...(config.theme.backgroundColor ? { backgroundColor: config.theme.backgroundColor } : {}),
+            ...(config.theme.textColor ? { color: config.theme.textColor } : {}),
+            ...(config.theme.borderColor ? { borderColor: config.theme.borderColor } : {}),
+            borderRadius: `${config.theme.borderRadius}px`,
           }}
         >
           <ChatHeader config={config} onClose={() => setIsOpen(false)} />

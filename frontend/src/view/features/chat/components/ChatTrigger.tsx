@@ -7,10 +7,10 @@ interface ChatTriggerProps {
 }
 
 export default function ChatTrigger({ config, onClick }: ChatTriggerProps) {
-  const bg = config.buttonBgColor || config.accentColor;
-  const textColor = config.buttonTextColor || "#ffffff";
-  const rawWidth = config.buttonWidth || 56;
-  const maxWidth = config.buttonMaxWidth || 160;
+  const bg = config.button.bgColor || config.theme.accentColor;
+  const textColor = config.button.textColor || "#ffffff";
+  const rawWidth = config.button.width || 56;
+  const maxWidth = config.button.maxWidth || 160;
   const actualWidth = Math.min(rawWidth, maxWidth);
   const isWide = actualWidth > 70;
 
@@ -22,7 +22,7 @@ export default function ChatTrigger({ config, onClick }: ChatTriggerProps) {
         backgroundColor: bg,
         color: textColor,
         boxShadow: `0 8px 24px ${bg}40`,
-        borderRadius: `${config.buttonBorderRadius ?? 28}px`,
+        borderRadius: `${config.button.borderRadius ?? 28}px`,
         width: `${actualWidth}px`,
         minWidth: `${actualWidth}px`,
         maxWidth: `${maxWidth}px`,
@@ -34,7 +34,7 @@ export default function ChatTrigger({ config, onClick }: ChatTriggerProps) {
       <MessageCircle className="h-6 w-6 flex-shrink-0" />
       {isWide && (
         <span className="text-sm font-semibold truncate whitespace-nowrap">
-          {config.botName || "Chat"}
+          {config.general.botName || "Chat"}
         </span>
       )}
     </button>

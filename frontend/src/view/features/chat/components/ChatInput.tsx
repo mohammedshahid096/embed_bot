@@ -40,18 +40,18 @@ export default function ChatInput({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={config.inputPlaceholder}
+        placeholder={config.general.inputPlaceholder}
         disabled={disabled}
         className="flex-1 resize-none border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:placeholder:text-gray-500"
         style={
           {
-            "--tw-ring-color": `${config.accentColor}40`,
-            ...(config.inputBgColor ? { backgroundColor: config.inputBgColor } : {}),
-            ...(config.inputTextColor || config.textColor
-              ? { color: config.inputTextColor || config.textColor }
+            "--tw-ring-color": `${config.theme.accentColor}40`,
+            ...(config.input.bgColor ? { backgroundColor: config.input.bgColor } : {}),
+            ...(config.input.textColor || config.theme.textColor
+              ? { color: config.input.textColor || config.theme.textColor }
               : {}),
-            ...(config.inputBorderColor ? { borderColor: config.inputBorderColor } : {}),
-            borderRadius: `${config.inputBorderRadius ?? 12}px`,
+            ...(config.input.borderColor ? { borderColor: config.input.borderColor } : {}),
+            borderRadius: `${config.input.borderRadius ?? 12}px`,
           } as React.CSSProperties
         }
       />
@@ -60,9 +60,9 @@ export default function ChatInput({
         disabled={!value.trim() || disabled}
         className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-200 hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
         style={{
-          backgroundColor: config.buttonBgColor || config.accentColor,
-          color: config.buttonTextColor || "#ffffff",
-          borderRadius: `${config.buttonBorderRadius !== undefined ? Math.min(config.buttonBorderRadius, 16) : 12}px`,
+          backgroundColor: config.button.bgColor || config.theme.accentColor,
+          color: config.button.textColor || "#ffffff",
+          borderRadius: `${config.button.borderRadius !== undefined ? Math.min(config.button.borderRadius, 16) : 12}px`,
         }}
         aria-label="Send message"
       >

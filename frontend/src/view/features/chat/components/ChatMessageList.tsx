@@ -15,19 +15,19 @@ export default function ChatMessageList({
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center">
         <div
           className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: `${config.accentColor}15` }}
+          style={{ backgroundColor: `${config.theme.accentColor}15` }}
         >
-          <Bot className="h-7 w-7" style={{ color: config.accentColor }} />
+          <Bot className="h-7 w-7" style={{ color: config.theme.accentColor }} />
         </div>
         <p
           className="text-sm font-medium text-gray-800 dark:text-gray-200"
-          style={{ color: config.textColor || undefined }}
+          style={{ color: config.theme.textColor || undefined }}
         >
-          {config.welcomeMessage}
+          {config.general.welcomeMessage}
         </p>
         <p
           className="mt-1 text-xs text-gray-400 dark:text-gray-500"
-          style={{ color: config.textColor ? `${config.textColor}99` : undefined }}
+          style={{ color: config.theme.textColor ? `${config.theme.textColor}99` : undefined }}
         >
           Ask me anything about our services
         </p>
@@ -45,11 +45,11 @@ export default function ChatMessageList({
           {msg.role === "bot" && (
             <div
               className="mr-2 mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: `${config.accentColor}20` }}
+              style={{ backgroundColor: `${config.theme.accentColor}20` }}
             >
               <Bot
                 className="h-3.5 w-3.5"
-                style={{ color: config.accentColor }}
+                style={{ color: config.theme.accentColor }}
               />
             </div>
           )}
@@ -62,15 +62,15 @@ export default function ChatMessageList({
             style={
               msg.role === "user"
                 ? {
-                    backgroundColor: config.userMessageBgColor || config.accentColor,
-                    color: config.userMessageTextColor || "#ffffff",
+                    backgroundColor: config.messages.userBgColor || config.theme.accentColor,
+                    color: config.messages.userTextColor || "#ffffff",
                   }
                 : {
-                    ...(config.botMessageBgColor
-                      ? { backgroundColor: config.botMessageBgColor }
+                    ...(config.messages.botBgColor
+                      ? { backgroundColor: config.messages.botBgColor }
                       : {}),
-                    ...(config.botMessageTextColor || config.textColor
-                      ? { color: config.botMessageTextColor || config.textColor }
+                    ...(config.messages.botTextColor || config.theme.textColor
+                      ? { color: config.messages.botTextColor || config.theme.textColor }
                       : {}),
                   }
             }

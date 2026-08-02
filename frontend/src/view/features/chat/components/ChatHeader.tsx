@@ -11,9 +11,9 @@ export default function ChatHeader({ config, onClose }: ChatHeaderProps) {
     <div
       className="flex items-center justify-between px-4 py-3"
       style={{
-        backgroundColor: config.accentColor,
-        borderTopLeftRadius: `${config.borderRadius}px`,
-        borderTopRightRadius: `${config.borderRadius}px`,
+        backgroundColor: config.theme.accentColor,
+        borderTopLeftRadius: `${config.theme.borderRadius}px`,
+        borderTopRightRadius: `${config.theme.borderRadius}px`,
       }}
     >
       <div className="flex items-center gap-2.5">
@@ -22,7 +22,7 @@ export default function ChatHeader({ config, onClose }: ChatHeaderProps) {
         </div>
         <div className="flex flex-col">
           <span className="text-sm font-semibold text-white leading-tight">
-            {config.botName}
+            {config.general.botName}
           </span>
           <span className="text-[10px] text-white/70 leading-tight">
             Online

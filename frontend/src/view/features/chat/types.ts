@@ -1,6 +1,8 @@
 // Chat widget configuration types
 // These types define what the client can customize
 
+import merge from "lodash/merge";
+
 // --- Sub-interfaces for grouped config ---
 
 export interface ChatConfigGeneral {
@@ -120,23 +122,7 @@ export function deepMergeChatConfig(
 ): ChatConfig {
   if (!override) return { ...base };
 
-  const result: ChatConfig = {
-    general: { ...base.general },
-    theme: { ...base.theme },
-    button: { ...base.button },
-    input: { ...base.input },
-    messages: { ...base.messages },
-  };
-
-  for (const groupKey of Object.keys(override) as (keyof ChatConfig)[]) {
-    const overrideGroup = override[groupKey];
-    if (overrideGroup && typeof overrideGroup === "object") {
-      (result as unknown as Record<string, unknown>)[groupKey] = {
-        ...result[groupKey],
-        ...overrideGroup,
-      };
-    }
-  }
-
-  return result;
+  // lodash merge: recursively merges override into a shallow copy of base,
+  // only overwriting fields that are explicitly provided.
+  return merge({}, base, override) as ChatConfig;
 }

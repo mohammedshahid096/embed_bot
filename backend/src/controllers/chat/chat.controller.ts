@@ -25,8 +25,7 @@ export const createNewChatSessionController = async (
     }
 
     const url = new URL(origin);
-    const hostname = url.hostname;
-    if (!chatBot.allowedDomains.includes(hostname)) {
+    if (!chatBot.allowedDomains.includes(url.origin)) {
       return next(httpErrors.BadRequest("Domain is not allowed"));
     }
 

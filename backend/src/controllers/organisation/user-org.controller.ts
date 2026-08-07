@@ -9,6 +9,7 @@ import { CheerioWebsiteUrls } from "../../services/cheerio.service";
 import RabbitMQProducer from "../../services/rabitmq/producer.service";
 import CrawlJobModel from "../../schema/crawljob.model";
 import KnowledgeBaseModel from "../../schema/knowledgebase.model";
+import ChatBotModel from "../../schema/chatbot.model";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -29,6 +30,10 @@ export const onBoardingOrganisationController = async (
       organisationId: newOrgDetails?._id,
     });
 
+    await ChatBotModel.create({
+      organizationId: newOrgDetails?._id,
+      allowedDomains: [onBoardOrgDetails?.website || ""],
+    });
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 201,
       message: "Organisation Onboarded Successfully",

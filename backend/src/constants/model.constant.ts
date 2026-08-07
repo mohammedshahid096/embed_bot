@@ -4,6 +4,7 @@ const modelConstants = {
   crawlJob: "crawljob",
   knowledgeBase: "knowledgebase",
   apiKey: "apikey",
+  chatBot: "chatBot",
 };
 
 export default modelConstants;

@@ -118,3 +118,35 @@ export const agentChatController = async (
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
+
+export const getSessionDetailsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { sessionId, chatbotId } = req.params;
+    const sessionData = await ChatMessageModel.findOne({
+      _id: sessionId,
+      chatBotId: chatbotId,
+    });
+
+    if (!sessionData) {
+      return next(httpErrors.NotFound("Session not found"));
+    }
+
+    // const filterDocs = sessionData?.messages?.map((item) => ({
+    //   content: item.content,
+    //   role: item.role,
+    // }));
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "session details fetched successfully",
+      data: sessionData,
+      // otherData: { filterDocs },
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};

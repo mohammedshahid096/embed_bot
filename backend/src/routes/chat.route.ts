@@ -6,6 +6,7 @@ import {
 import {
   agentChatController,
   createNewChatSessionController,
+  getSessionDetailsController,
 } from "../controllers/chat/chat.controller";
 
 const chatRoutes = Router();
@@ -16,6 +17,7 @@ chatRoutes
 
 chatRoutes
   .route("/:chatbotId/:sessionId/chat")
+  .get(getSessionDetailsController)
   .post(agentChatValidation, agentChatController);
 
 export default chatRoutes;

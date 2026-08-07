@@ -5,6 +5,7 @@ const modelConstants = {
   knowledgeBase: "knowledgebase",
   apiKey: "apikey",
   chatBot: "chatBot",
+  chat: "chat",
 };
 
 export default modelConstants;

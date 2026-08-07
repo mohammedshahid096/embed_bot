@@ -11,8 +11,8 @@ export interface IMessage {
     output_tokens: number;
     total_tokens: number;
   };
-  order: number;
-  error: string;
+  order?: number;
+  error?: string;
 }
 
 export interface IChatMessage extends Document {

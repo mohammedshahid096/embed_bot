@@ -1,12 +1,21 @@
 import { Router } from "express";
-import { newChatSessionValidation } from "../validation/chat/chat.joi";
-import { createNewChatSessionController } from "../controllers/chat/chat.controller";
+import {
+  agentChatValidation,
+  newChatSessionValidation,
+} from "../validation/chat/chat.joi";
+import {
+  agentChatController,
+  createNewChatSessionController,
+} from "../controllers/chat/chat.controller";
 
 const chatRoutes = Router();
 
-// POST /chat/:chatbotId/new-chat — create a new chat session (public endpoint)
 chatRoutes
   .route("/:chatbotId/new-chat")
   .post(newChatSessionValidation, createNewChatSessionController);
+
+chatRoutes
+  .route("/:chatbotId/:sessionId/chat")
+  .post(agentChatValidation, agentChatController);
 
 export default chatRoutes;

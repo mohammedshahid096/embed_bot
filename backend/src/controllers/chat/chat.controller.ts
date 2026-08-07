@@ -3,7 +3,8 @@ import httpErrors from "http-errors";
 import errorHandling, { AppError } from "../../utils/errorHandling.util";
 import responseHandlingUtil from "../../utils/responseHandling.util";
 import ChatBotModel from "../../schema/chatbot.model";
-import ChatMessageModel from "../../schema/chat.model";
+import ChatMessageModel, { IMessage } from "../../schema/chat.model";
+import AgentService from "../../services/agent.service";
 
 export const createNewChatSessionController = async (
   req: Request,
@@ -12,7 +13,7 @@ export const createNewChatSessionController = async (
 ) => {
   try {
     const { chatbotId } = req.params;
-    const { origin } = req.body;
+    const { origin, query } = req.body;
 
     // Verify the chatbot exists and is active
     const chatBot = await ChatBotModel.findOne({
@@ -32,13 +33,86 @@ export const createNewChatSessionController = async (
     const chatSession = await ChatMessageModel.create({
       chatBotId: chatBot._id,
       organizationId: chatBot.organizationId?.toString(),
-      messages: [],
+      messages: [
+        {
+          content: query,
+          role: "human",
+          order: 0,
+        },
+      ],
     });
 
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 201,
       message: "Chat session created successfully",
       data: chatSession,
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+export const agentChatController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { sessionId, chatbotId } = req.params;
+    const { inputQuestion } = req.body;
+
+    const chatDetails = await ChatMessageModel.findOne({
+      _id: sessionId,
+      chatBotId: chatbotId,
+    }).lean();
+
+    if (!chatDetails) {
+      return next(httpErrors.NotFound("Session Details not found"));
+    }
+
+    const userTimestamp = new Date();
+
+    const agentService = new AgentService({
+      sessionId: chatDetails._id.toString(),
+    });
+
+    const aiResponse = await agentService.processRequest(
+      inputQuestion,
+      chatDetails,
+    );
+
+    const tokenUsage = (aiResponse.outputDetails as any)?.response_metadata
+      ?.tokenUsage;
+
+    const newMessageData: IMessage[] = [
+      {
+        content: inputQuestion || "",
+        role: "human",
+        timestamp: userTimestamp,
+        order: chatDetails?.messages?.length + 1,
+      },
+      {
+        content: aiResponse.output || "",
+        role: "ai",
+        timestamp: new Date(),
+        order: chatDetails?.messages?.length + 2,
+        tokenUsage: {
+          input_tokens: tokenUsage?.promptTokens || 0,
+          output_tokens: tokenUsage?.completionTokens || 0,
+          total_tokens: tokenUsage?.totalTokens || 0,
+        },
+      },
+    ];
+
+    const updatedDetails = await ChatMessageModel.findByIdAndUpdate(
+      sessionId,
+      { $push: { messages: newMessageData } },
+      { new: true },
+    );
+
+    responseHandlingUtil.successResponseStandard(res, {
+      data: updatedDetails,
+      otherData: { aiResponse, aiMessage: aiResponse.output },
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

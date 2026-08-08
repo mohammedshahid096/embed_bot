@@ -22,7 +22,7 @@ export default async function ChatbotPage({ params }: PageProps) {
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gray-950 p-4 font-sans">
-      <ChatWidget />
+      <ChatWidget chatbotId={chatbotId} isClient={true} />
     </div>
   );
 }

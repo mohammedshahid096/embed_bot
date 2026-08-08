@@ -12,3 +12,4 @@ export {
   defaultChatConfig,
   deepMergeChatConfig,
 } from "./types";
+export * from "./api/chat.api";

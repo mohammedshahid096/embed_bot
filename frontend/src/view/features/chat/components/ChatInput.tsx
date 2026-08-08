@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { SendHorizontal } from "lucide-react";
 import type { ChatConfig } from "../types";
@@ -46,11 +48,15 @@ export default function ChatInput({
         style={
           {
             "--tw-ring-color": `${config.theme.accentColor}40`,
-            ...(config.input.bgColor ? { backgroundColor: config.input.bgColor } : {}),
+            ...(config.input.bgColor
+              ? { backgroundColor: config.input.bgColor }
+              : {}),
             ...(config.input.textColor || config.theme.textColor
               ? { color: config.input.textColor || config.theme.textColor }
               : {}),
-            ...(config.input.borderColor ? { borderColor: config.input.borderColor } : {}),
+            ...(config.input.borderColor
+              ? { borderColor: config.input.borderColor }
+              : {}),
             borderRadius: `${config.input.borderRadius ?? 12}px`,
           } as React.CSSProperties
         }

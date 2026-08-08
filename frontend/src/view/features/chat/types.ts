@@ -57,13 +57,33 @@ export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-// --- Other types ---
+// --- Message & Session Types matching Backend Schema ---
+
+export interface TokenUsage {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+}
+
+export type MessageRole = "human" | "ai";
 
 export interface ChatMessage {
-  id: string;
-  role: "user" | "bot";
+  _id: string;
+  role: MessageRole;
   content: string;
-  timestamp: Date;
+  timestamp: string | Date;
+  tokenUsage?: TokenUsage;
+  order: number;
+}
+
+export interface ChatSessionData {
+  _id: string;
+  messages: ChatMessage[];
+  chatBotId: string;
+  organizationId: string;
+  date?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ChatTheme {

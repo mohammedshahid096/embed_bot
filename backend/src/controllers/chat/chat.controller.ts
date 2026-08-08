@@ -150,3 +150,29 @@ export const getSessionDetailsController = async (
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
+
+export const getChatBotDetailsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { chatbotId } = req.params;
+    const chatBot = await ChatBotModel.findOne({
+      _id: chatbotId,
+      isActive: true,
+    })
+      .select({ config: 1, createdAt: 1, updatedAt: 1 })
+      .lean();
+    if (!chatBot) {
+      return next(httpErrors.NotFound("Chatbot not found or is inactive"));
+    }
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Chatbot details fetched successfully",
+      data: chatBot,
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};

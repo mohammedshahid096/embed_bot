@@ -6,10 +6,13 @@ import {
 import {
   agentChatController,
   createNewChatSessionController,
+  getChatBotDetailsController,
   getSessionDetailsController,
 } from "../controllers/chat/chat.controller";
 
 const chatRoutes = Router();
+
+chatRoutes.route("/bot-details/:chatbotId").get(getChatBotDetailsController);
 
 chatRoutes
   .route("/:chatbotId/new-chat")

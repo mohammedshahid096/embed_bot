@@ -19,7 +19,7 @@ chatRoutes
   .post(newChatSessionValidation, createNewChatSessionController);
 
 chatRoutes
-  .route("/:chatbotId/:sessionId/chat")
+  .route("/:chatbotId/:sessionId")
   .get(getSessionDetailsController)
   .post(agentChatValidation, agentChatController);
 

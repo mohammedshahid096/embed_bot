@@ -176,3 +176,27 @@ export const getChatBotDetailsController = async (
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
+
+export const getChatBotDetailsPrivateController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const organizationId = req.organisation?._id.toString();
+    const chatBot = await ChatBotModel.find({
+      organizationId,
+      isActive: true,
+    }).lean();
+    if (!chatBot) {
+      return next(httpErrors.NotFound("Chatbot not found or is inactive"));
+    }
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Chatbot details fetched successfully",
+      data: chatBot,
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};

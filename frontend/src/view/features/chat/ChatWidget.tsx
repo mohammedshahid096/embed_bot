@@ -237,7 +237,7 @@ export default function ChatWidget({
       {/* Chat Popup */}
       {isOpen && (
         <div
-          className="flex flex-col overflow-hidden border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#1a1a2e] animate-in fade-in slide-in-from-bottom-2"
+          className="flex flex-col overflow-hidden border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#1a1a2e]"
           style={{
             width: "380px",
             height: "520px",
@@ -251,8 +251,22 @@ export default function ChatWidget({
               ? { borderColor: config.theme.borderColor }
               : {}),
             borderRadius: `${config.theme.borderRadius}px`,
+            animation: "chatWidgetPopIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+            transformOrigin: "bottom right",
           }}
         >
+          <style>{`
+            @keyframes chatWidgetPopIn {
+              0% {
+                opacity: 0;
+                transform: scale(0.85) translateY(8px);
+              }
+              100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+              }
+            }
+          `}</style>
           <ChatHeader config={config} onClose={() => setIsOpen(false)} />
 
           <ChatMessageList

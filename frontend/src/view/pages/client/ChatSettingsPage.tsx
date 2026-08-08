@@ -72,7 +72,7 @@ export default function ChatSettingsPage() {
         </div>
 
         {/* Live Preview: floating ChatWidget */}
-        <ChatWidget config={config} />
+        <ChatWidget config={config} isPopupOpen={true} isClient={false} />
       </div>
     </ClientLayout>
   );

@@ -200,3 +200,57 @@ export const getChatBotDetailsPrivateController = async (
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
+
+export const updateChatBotDetailsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const organizationId = req.organisation?._id.toString();
+    const { config } = req.body;
+
+    if (!config) {
+      return next(httpErrors.BadRequest("config is required"));
+    }
+
+    const updateFields: Record<string, any> = {};
+    const allowedGroups = [
+      "general",
+      "theme",
+      "button",
+      "input",
+      "messages",
+    ] as const;
+
+    for (const group of allowedGroups) {
+      if (config[group] && typeof config[group] === "object") {
+        for (const [key, value] of Object.entries(config[group])) {
+          updateFields[`config.${group}.${key}`] = value;
+        }
+      }
+    }
+
+    if (Object.keys(updateFields).length === 0) {
+      return next(httpErrors.BadRequest("No valid config fields to update"));
+    }
+
+    const updatedChatBot = await ChatBotModel.findOneAndUpdate(
+      { organizationId, isActive: true },
+      { $set: updateFields },
+      { new: true },
+    ).lean();
+
+    if (!updatedChatBot) {
+      return next(httpErrors.NotFound("Chatbot not found or is inactive"));
+    }
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Chatbot details updated successfully",
+      data: updatedChatBot,
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};

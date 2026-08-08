@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   agentChatValidation,
   newChatSessionValidation,
+  updateChatBotDetailsValidation,
 } from "../validation/chat/chat.joi";
 import {
   agentChatController,
@@ -9,6 +10,7 @@ import {
   getChatBotDetailsController,
   getChatBotDetailsPrivateController,
   getSessionDetailsController,
+  updateChatBotDetailsController,
 } from "../controllers/chat/chat.controller";
 import { Authentication } from "../middlewares/auth.middleware";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
@@ -33,6 +35,12 @@ chatRoutes
     Authentication,
     OrganisationMiddleware,
     getChatBotDetailsPrivateController,
+  )
+  .put(
+    Authentication,
+    OrganisationMiddleware,
+    updateChatBotDetailsValidation,
+    updateChatBotDetailsController,
   );
 
 export default chatRoutes;

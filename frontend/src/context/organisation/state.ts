@@ -3,9 +3,11 @@ import { organisationReducer } from "./reducer";
 import { organisationAction } from "./action";
 import type { OrganisationStateType } from "@/types/context/organisation.types";
 import { getOrganisationDetailsApi } from "@/api/organisation.api";
+import { getChatBotDetailsApi } from "@/api/chatbot.api";
 
 export const initialOrganisationState: OrganisationStateType = {
   organisationDetails: null,
+  chatBotDetails: null,
 };
 
 export const useOrganisationState = () => {
@@ -19,6 +21,18 @@ export const useOrganisationState = () => {
     if (response[0]) {
       dispatch({
         type: organisationAction.GET_ORGANISATION_DETAILS,
+        payload: response[1],
+      });
+    }
+
+    return response;
+  };
+
+  const getChatBotDetailsAction = async () => {
+    const response = await getChatBotDetailsApi();
+    if (response[0]) {
+      dispatch({
+        type: organisationAction.GET_CHATBOT_DETAILS,
         payload: response[1],
       });
     }
@@ -42,6 +56,7 @@ export const useOrganisationState = () => {
   return {
     ...state,
     getOrganisationDetailsAction,
+    getChatBotDetailsAction,
     updateOrganisationStateAction,
     resetOrganisationStateAction,
   };
@@ -50,6 +65,7 @@ export const useOrganisationState = () => {
 export const initialStateForContext = {
   ...initialOrganisationState,
   getOrganisationDetailsAction: async (): Promise<any> => {},
+  getChatBotDetailsAction: async (): Promise<any> => {},
   updateOrganisationStateAction: () => {},
   resetOrganisationStateAction: () => {},
 };

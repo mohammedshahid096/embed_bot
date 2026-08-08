@@ -184,7 +184,7 @@ export const getChatBotDetailsPrivateController = async (
 ) => {
   try {
     const organizationId = req.organisation?._id.toString();
-    const chatBot = await ChatBotModel.find({
+    const chatBot = await ChatBotModel.findOne({
       organizationId,
       isActive: true,
     }).lean();

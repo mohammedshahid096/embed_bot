@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { MessageSquare } from "lucide-react";
 import ClientLayout from "@/view/layout/ClientLayout";
 import { ChatWidget } from "@/view/features/chat";
 import type { ChatConfig, DeepPartial } from "@/view/features/chat";
 import { defaultChatConfig, deepMergeChatConfig } from "@/view/features/chat";
 import ChatSettingsForm from "@/view/features/chat/components/ChatSettingsForm";
+import Context from "@/context/context";
 
 export default function ChatSettingsPage() {
   const [config, setConfig] = useState<ChatConfig>({ ...defaultChatConfig });
+  const {
+    organisationState: { getChatBotDetailsAction, chatBotDetails },
+  } = useContext(Context);
+
+  useEffect(() => {
+    if (!chatBotDetails) {
+      getChatBotDetailsAction();
+    }
+  }, [chatBotDetails]);
+
+  useEffect(() => {
+    if (chatBotDetails) {
+      setConfig(chatBotDetails.config);
+    }
+  }, [chatBotDetails]);
 
   const updateConfig = <G extends keyof ChatConfig>(
     group: G,
@@ -27,6 +43,7 @@ export default function ChatSettingsPage() {
     setConfig((prev) => deepMergeChatConfig(prev, themeConfig));
   };
 
+  // console.log(config);
   return (
     <ClientLayout>
       <div className="relative min-h-screen bg-background pb-16">

@@ -18,6 +18,12 @@ export const organisationReducer = (
         organisationDetails: action.payload?.data?.organistationDetails || null,
       };
 
+    case organisationAction.GET_CHATBOT_DETAILS:
+      return {
+        ...state,
+        chatBotDetails: action.payload?.data || null,
+      };
+
     case organisationAction.UPDATE_ORGANISATION_STATE:
       return {
         ...state,

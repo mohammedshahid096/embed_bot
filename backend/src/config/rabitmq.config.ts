@@ -47,7 +47,7 @@ export const connectRabbitMQ = async (): Promise<void> => {
     reconnectAttempts = 0;
 
     const rabbitmqConsumer = new RabbitMQConsumer();
-    rabbitmqConsumer.websiteScrapperConsumer();
+    rabbitmqConsumer.loadConsumers();
 
     console.log(`${magenta("[RabbitMQ]")} Connected successfully.`);
   } catch (error: any) {

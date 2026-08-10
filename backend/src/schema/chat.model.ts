@@ -2,6 +2,7 @@ import mongoose, { Document, Schema, Model } from "mongoose";
 import modelConstants from "../constants/model.constant";
 
 export interface IMessage {
+  _id?: mongoose.Types.ObjectId;
   content?: string;
   role?: "human" | "ai";
   timestamp?: Date;
@@ -11,6 +12,7 @@ export interface IMessage {
     output_tokens: number;
     total_tokens: number;
   };
+  status?: "processing" | "completed" | "failed";
   order?: number;
   error?: string;
 }
@@ -30,6 +32,11 @@ const MessageSchema = new Schema<IMessage>(
     role: { type: String, enum: ["human", "ai"] },
     timestamp: { type: Date, default: Date.now },
     metadata: Schema.Types.Mixed,
+    status: {
+      type: String,
+      enum: ["processing", "completed", "failed"],
+      default: "processing",
+    },
     tokenUsage: {
       input_tokens: { type: Number, default: 0 },
       output_tokens: { type: Number, default: 0 },

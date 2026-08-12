@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Bot } from "lucide-react";
+import { Bot, AlertCircle } from "lucide-react";
 import type { ChatMessage, ChatConfig } from "../types";
 
 interface ChatMessageListProps {
@@ -55,8 +55,9 @@ export default function ChatMessageList({
 
   return (
     <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
-      {messages.map((msg, index) => {
+      {messages.map((msg) => {
         const isUser = msg.role === "human";
+        const isFailed = msg.status === "failed";
         const key = msg._id;
 
         return (
@@ -67,11 +68,17 @@ export default function ChatMessageList({
             {!isUser && (
               <div
                 className="mr-2 mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: `${config.theme.accentColor}20` }}
+                style={{
+                  backgroundColor: isFailed
+                    ? "#ef444420"
+                    : `${config.theme.accentColor}20`,
+                }}
               >
                 <Bot
                   className="h-3.5 w-3.5"
-                  style={{ color: config.theme.accentColor }}
+                  style={{
+                    color: isFailed ? "#ef4444" : config.theme.accentColor,
+                  }}
                 />
               </div>
             )}
@@ -79,7 +86,9 @@ export default function ChatMessageList({
               className={`max-w-[75%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words ${
                 isUser
                   ? "rounded-br-md"
-                  : "bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-gray-200 rounded-bl-md"
+                  : isFailed
+                    ? "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 rounded-bl-md"
+                    : "bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-gray-200 rounded-bl-md"
               }`}
               style={
                 isUser
@@ -88,21 +97,32 @@ export default function ChatMessageList({
                         config.messages.userBgColor || config.theme.accentColor,
                       color: config.messages.userTextColor || "#ffffff",
                     }
-                  : {
-                      ...(config.messages.botBgColor
-                        ? { backgroundColor: config.messages.botBgColor }
-                        : {}),
-                      ...(config.messages.botTextColor || config.theme.textColor
-                        ? {
-                            color:
-                              config.messages.botTextColor ||
-                              config.theme.textColor,
-                          }
-                        : {}),
-                    }
+                  : isFailed
+                    ? {}
+                    : {
+                        ...(config.messages.botBgColor
+                          ? { backgroundColor: config.messages.botBgColor }
+                          : {}),
+                        ...(config.messages.botTextColor ||
+                        config.theme.textColor
+                          ? {
+                              color:
+                                config.messages.botTextColor ||
+                                config.theme.textColor,
+                            }
+                          : {}),
+                      }
               }
             >
-              {msg.content}
+              {isFailed && (
+                <div className="flex items-center gap-1 mb-1 text-xs font-medium text-red-500 dark:text-red-400">
+                  <AlertCircle className="h-3 w-3" />
+                  <span>Error</span>
+                </div>
+              )}
+              {msg.error ||
+                msg.content ||
+                (isFailed ? "Something went wrong. Please try again." : "")}
             </div>
           </div>
         );

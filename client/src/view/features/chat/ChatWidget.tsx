@@ -130,7 +130,9 @@ export default function ChatWidget({
 
           if (
             aiMessage &&
-            (aiMessage.status === "completed" || aiMessage.status === "failed")
+            (aiMessage.status === "completed" ||
+              aiMessage.status === "failed" ||
+              aiMessage.status === "error")
           ) {
             stopPolling();
             setLoading(false);

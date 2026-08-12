@@ -317,7 +317,6 @@ export const pollingSessionDetails = async (
 ) => {
   try {
     const { sessionId } = req.params;
-    console.log(sessionId);
 
     const redisService = new RedisServiceClass();
 

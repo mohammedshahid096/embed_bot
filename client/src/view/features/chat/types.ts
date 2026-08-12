@@ -74,6 +74,8 @@ export interface ChatMessage {
   timestamp: string | Date;
   tokenUsage?: TokenUsage;
   order: number;
+  status?: "processing" | "completed" | "failed";
+  error?: string;
 }
 
 export interface ChatSessionData {

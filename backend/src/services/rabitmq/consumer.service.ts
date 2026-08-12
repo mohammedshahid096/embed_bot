@@ -6,7 +6,6 @@ import {
   IWebsiteScrapperPayload,
 } from "../../types/rabbitmq/payload.type";
 import { cyan } from "colorette";
-import { IChatMessage } from "../../schema/chat.model";
 import messageProcessHandler from "./handlers/messageProcess.handler";
 
 class RabbitMQConsumer {

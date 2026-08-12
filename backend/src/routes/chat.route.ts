@@ -24,7 +24,7 @@ chatRoutes
   .route("/:chatbotId/new-chat")
   .post(newChatSessionValidation, createNewChatSessionController);
 
-chatRoutes.route("/polling/:sessionId").get(pollingSessionDetails);
+chatRoutes.route("/polling/:chatbotId/:sessionId").get(pollingSessionDetails);
 
 chatRoutes
   .route("/:chatbotId/:sessionId")

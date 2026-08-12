@@ -10,6 +10,7 @@ import {
   getChatBotDetailsController,
   getChatBotDetailsPrivateController,
   getSessionDetailsController,
+  pollingSessionDetails,
   updateChatBotDetailsController,
 } from "../controllers/chat/chat.controller";
 import { Authentication } from "../middlewares/auth.middleware";
@@ -22,6 +23,8 @@ chatRoutes.route("/bot-details/:chatbotId").get(getChatBotDetailsController);
 chatRoutes
   .route("/:chatbotId/new-chat")
   .post(newChatSessionValidation, createNewChatSessionController);
+
+chatRoutes.route("/polling/:sessionId").get(pollingSessionDetails);
 
 chatRoutes
   .route("/:chatbotId/:sessionId")

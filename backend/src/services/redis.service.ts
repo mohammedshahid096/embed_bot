@@ -1,7 +1,8 @@
 import redis from "../config/redis.config";
 import { AppError } from "../utils/errorHandling.util";
+import redisExpiryTime from "../constants/redis.constant";
 
-const redisExpiry = 1 * 24 * 60 * 60; // 1day in seconds
+const redisExpiry = redisExpiryTime.fifteenMinuteInSec;
 
 class RedisServiceClass {
   redisExpiry: number;

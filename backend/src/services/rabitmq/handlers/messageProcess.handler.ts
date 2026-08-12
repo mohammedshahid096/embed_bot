@@ -4,6 +4,7 @@ import ChatMessageModel from "../../../schema/chat.model";
 import { IChatMessagePayload } from "../../../types/rabbitmq/payload.type";
 import AgentService from "../../agent.service";
 import RedisServiceClass from "../../redis.service";
+import redisExpiryTime from "../../../constants/redis.constant";
 
 const messageProcessHandler = async (message: {
   job: string;
@@ -20,7 +21,9 @@ const messageProcessHandler = async (message: {
       });
 
       const cachedKey = `chatSession:${data.sessionId}`;
-      const redisService = new RedisServiceClass({ expiryTime: 15 * 60 });
+      const redisService = new RedisServiceClass({
+        expiryTime: redisExpiryTime.fifteenMinuteInSec,
+      });
       let chatDetails = await redisService.getRedisJSON(cachedKey);
 
       const aiResponse = await agentService.processRequest(
@@ -50,8 +53,6 @@ const messageProcessHandler = async (message: {
         },
         { new: true },
       );
-
-      console.log(updateAiMessage);
 
       await redisService.setRedisJSON(cachedKey, updateAiMessage);
       break;

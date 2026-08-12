@@ -4,7 +4,9 @@ import errorHandling, { AppError } from "../../utils/errorHandling.util";
 import responseHandlingUtil from "../../utils/responseHandling.util";
 import ChatBotModel from "../../schema/chatbot.model";
 import ChatMessageModel, { IMessage } from "../../schema/chat.model";
-import AgentService from "../../services/agent.service";
+import RabbitMQProducer from "../../services/rabitmq/producer.service";
+import RedisServiceClass from "../../services/redis.service";
+import redisExpiryTime from "../../constants/redis.constant";
 
 export const createNewChatSessionController = async (
   req: Request,
@@ -37,10 +39,21 @@ export const createNewChatSessionController = async (
         {
           content: query,
           role: "human",
-          order: 0,
+          timestamp: new Date(),
+          status: "completed",
+          order: 1,
         },
       ],
     });
+
+    const redisService = new RedisServiceClass({
+      expiryTime: redisExpiryTime.fifteenMinuteInSec,
+    });
+
+    await redisService.setRedisJSON(
+      `chatSession:${chatSession._id.toString()}`,
+      chatSession,
+    );
 
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 201,
@@ -61,48 +74,63 @@ export const agentChatController = async (
     const { sessionId, chatbotId } = req.params;
     const { inputQuestion } = req.body;
 
-    const chatDetails = await ChatMessageModel.findOne({
-      _id: sessionId,
-      chatBotId: chatbotId,
-    }).lean();
+    let cachedKey = `chatSession:${sessionId}`;
+
+    const redisService = new RedisServiceClass({
+      expiryTime: redisExpiryTime.fifteenMinuteInSec,
+    });
+
+    let chatDetails = await redisService.getRedisJSON(cachedKey);
 
     if (!chatDetails) {
-      return next(httpErrors.NotFound("Session Details not found"));
+      chatDetails = await ChatMessageModel.findOne({
+        _id: sessionId,
+        chatBotId: chatbotId,
+      }).lean();
+
+      if (!chatDetails) {
+        return next(httpErrors.NotFound("Session Details not found"));
+      }
     }
+
+    // const url = new
+    // URL(origin);
+    // if (!chatDetails.allowedDomains.includes(url.origin)) {
+    //   return next(httpErrors.BadRequest("Domain is not allowed"));
+    // }
 
     const userTimestamp = new Date();
 
-    const agentService = new AgentService({
-      sessionId: chatDetails._id.toString(),
-    });
+    const rabbitmqProducer = new RabbitMQProducer();
 
-    const aiResponse = await agentService.processRequest(
-      inputQuestion,
-      chatDetails,
-    );
+    let newMessageData: IMessage[] = [];
 
-    const tokenUsage = (aiResponse.outputDetails as any)?.response_metadata
-      ?.tokenUsage;
-
-    const newMessageData: IMessage[] = [
-      {
-        content: inputQuestion || "",
-        role: "human",
-        timestamp: userTimestamp,
-        order: chatDetails?.messages?.length + 1,
-      },
-      {
-        content: aiResponse.output || "",
-        role: "ai",
-        timestamp: new Date(),
-        order: chatDetails?.messages?.length + 2,
-        tokenUsage: {
-          input_tokens: tokenUsage?.promptTokens || 0,
-          output_tokens: tokenUsage?.completionTokens || 0,
-          total_tokens: tokenUsage?.totalTokens || 0,
+    if (chatDetails?.messages?.length === 1) {
+      newMessageData = [
+        {
+          content: "",
+          role: "ai",
+          status: "processing",
+          order: 2,
         },
-      },
-    ];
+      ];
+    } else {
+      newMessageData = [
+        {
+          content: inputQuestion || "",
+          role: "human",
+          timestamp: userTimestamp,
+          status: "completed",
+          order: chatDetails?.messages?.length + 1,
+        },
+        {
+          content: "",
+          role: "ai",
+          status: "processing",
+          order: chatDetails?.messages?.length + 2,
+        },
+      ];
+    }
 
     const updatedDetails = await ChatMessageModel.findByIdAndUpdate(
       sessionId,
@@ -110,9 +138,25 @@ export const agentChatController = async (
       { new: true },
     );
 
+    await redisService.setRedisJSON(cachedKey, updatedDetails);
+    const lastMessage =
+      updatedDetails?.messages?.[updatedDetails?.messages?.length - 1];
+
+    const isPublished = await rabbitmqProducer.chatMessageProducer({
+      message: inputQuestion || "",
+      organisationId: chatDetails.organizationId?.toString()!,
+      sessionId: chatDetails._id.toString(),
+      messageId: lastMessage?._id?.toString()!,
+      order: lastMessage?.order!,
+    });
+
+    if (!isPublished) {
+      return next(httpErrors.InternalServerError("Failed to publish message"));
+    }
+
     responseHandlingUtil.successResponseStandard(res, {
       data: updatedDetails,
-      otherData: { aiResponse, aiMessage: aiResponse.output },
+      otherData: { aiMessageId: lastMessage?._id?.toString() },
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);
@@ -158,12 +202,23 @@ export const getChatBotDetailsController = async (
 ) => {
   try {
     const { chatbotId } = req.params;
-    const chatBot = await ChatBotModel.findOne({
-      _id: chatbotId,
-      isActive: true,
-    })
-      .select({ config: 1, createdAt: 1, updatedAt: 1 })
-      .lean();
+
+    const redisService = new RedisServiceClass({
+      expiryTime: redisExpiryTime.thirtyMinuteInSec,
+    });
+    const cachedKey = `chatBot:${chatbotId}`;
+    let chatBot = await redisService.getRedisJSON(cachedKey);
+
+    if (!chatBot) {
+      chatBot = await ChatBotModel.findOne({
+        _id: chatbotId,
+        isActive: true,
+      })
+        .select({ config: 1, createdAt: 1, updatedAt: 1 })
+        .lean();
+      await redisService.setRedisJSON(cachedKey, chatBot);
+    }
+
     if (!chatBot) {
       return next(httpErrors.NotFound("Chatbot not found or is inactive"));
     }
@@ -249,6 +304,41 @@ export const updateChatBotDetailsController = async (
       statusCode: 200,
       message: "Chatbot details updated successfully",
       data: updatedChatBot,
+    });
+  } catch (error) {
+    errorHandling.handlingControllersError(error as AppError, next);
+  }
+};
+
+export const pollingSessionDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { sessionId } = req.params;
+    console.log(sessionId);
+
+    const redisService = new RedisServiceClass();
+
+    let cachedKey = `chatSession:${sessionId}`;
+
+    let chatDetails = await redisService.getRedisJSON(cachedKey);
+
+    if (!chatDetails) {
+      chatDetails = await ChatMessageModel.findOne({
+        _id: sessionId,
+      }).lean();
+      redisService.setRedisJSON(cachedKey, chatDetails);
+    }
+    if (!chatDetails) {
+      return next(httpErrors.NotFound("Session Details not found"));
+    }
+
+    responseHandlingUtil.successResponseStandard(res, {
+      statusCode: 200,
+      message: "Session details fetched successfully",
+      data: chatDetails,
     });
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);

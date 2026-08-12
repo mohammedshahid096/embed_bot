@@ -323,11 +323,11 @@ export default function ChatWidget({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+    <div className="fixed bottom-1 right-1 z-50 flex flex-col items-end gap-4">
       {/* Chat Popup */}
       {isOpen && (
         <div
-          className="flex flex-col overflow-hidden border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#1a1a2e]"
+          className="flex flex-col overflow-hidden border border-gray-200 bg-white dark:border-white/10 dark:bg-[#1a1a2e]"
           style={{
             width: "380px",
             height: "520px",
@@ -358,7 +358,17 @@ export default function ChatWidget({
               }
             }
           `}</style>
-          <ChatHeader config={config} onClose={() => setIsOpen(false)} />
+          <ChatHeader
+            config={config}
+            onClose={() => {
+              setIsOpen(false);
+
+              postPassingMessageFunction({
+                width: "65px",
+                height: "65px",
+              });
+            }}
+          />
 
           <ChatMessageList
             messages={
@@ -380,15 +390,18 @@ export default function ChatWidget({
       <ChatTrigger
         config={config}
         onClick={() => {
-          setIsOpen((prev) => !prev);
-
-          if (postPassingMessageFunction) {
+          if (isOpen) {
+            postPassingMessageFunction({
+              width: "65px",
+              height: "65px",
+            });
+          } else {
             postPassingMessageFunction({
               width: "430px",
               height: "620px",
-              borderRadius: 0,
             });
           }
+          setIsOpen((prev) => !prev);
         }}
       />
     </div>

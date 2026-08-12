@@ -8,8 +8,8 @@
   const iframe = document.createElement("iframe");
   iframe.src = `${baseUrl}/${chatbotId}`;
   iframe.id = "widget-iframe-chat-bot-id";
-  iframe.style.width = "56px";
-  iframe.style.height = "56px";
+  iframe.style.width = "65px";
+  iframe.style.height = "65px";
 
   iframe.style.minWidth = "56px";
   iframe.style.minHeight = "56px";
@@ -21,6 +21,7 @@
   iframe.style.bottom = "24px";
   iframe.style.right = "24px";
   iframe.style.border = "none";
+  iframe.style.background = "transparent";
   //   iframe.style.borderRadius = "50px";
   iframe.style.overflow = "hidden";
   iframe.style.zIndex = "999999";

@@ -18,6 +18,7 @@ import {
   getChatSession,
   setChatSession,
 } from "./helpers/session-storage.helper";
+import type { CSSProperties } from "react";
 
 const POLLING_INTERVAL_MS = 1500;
 const MAX_POLLING_ATTEMPTS = 60; // 1.5s * 60 = 90s max
@@ -302,6 +303,18 @@ export default function ChatWidget({
     [chatbotId, config.general.botName, chatWidgetInfo.sessionId],
   );
 
+  const postPassingMessageFunction = (properties: CSSProperties): void => {
+    const payload: {
+      type: "resize";
+      properties: CSSProperties;
+    } = {
+      type: "resize",
+      properties,
+    };
+
+    window.parent.postMessage(payload, "*");
+  };
+
   if (
     chatbotId &&
     (chatWidgetInfo.isFetchingBot || !chatWidgetInfo.isValidBot)
@@ -350,7 +363,9 @@ export default function ChatWidget({
           <ChatMessageList
             messages={
               chatWidgetInfo.pollingAiMessageId
-                ? messages.filter((msg) => msg._id !== chatWidgetInfo.pollingAiMessageId)
+                ? messages.filter(
+                    (msg) => msg._id !== chatWidgetInfo.pollingAiMessageId,
+                  )
                 : messages
             }
             config={config}
@@ -362,7 +377,20 @@ export default function ChatWidget({
       )}
 
       {/* Floating Trigger */}
-      <ChatTrigger config={config} onClick={() => setIsOpen((prev) => !prev)} />
+      <ChatTrigger
+        config={config}
+        onClick={() => {
+          setIsOpen((prev) => !prev);
+
+          if (postPassingMessageFunction) {
+            postPassingMessageFunction({
+              width: "430px",
+              height: "620px",
+              borderRadius: 0,
+            });
+          }
+        }}
+      />
     </div>
   );
 }

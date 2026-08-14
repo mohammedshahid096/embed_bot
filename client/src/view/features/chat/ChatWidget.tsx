@@ -125,15 +125,13 @@ export default function ChatWidget({
         if (res.success && res.data?.messages) {
           setMessages(res.data.messages);
 
-          const aiMessage = res.data.messages.find(
+          const aiMessage: ChatMessage | undefined = res.data.messages.find(
             (msg: ChatMessage) => msg._id === aiMessageId,
           );
 
           if (
             aiMessage &&
-            (aiMessage.status === "completed" ||
-              aiMessage.status === "failed" ||
-              aiMessage.status === "error")
+            (aiMessage.status === "completed" || aiMessage.status === "failed")
           ) {
             stopPolling();
             setLoading(false);

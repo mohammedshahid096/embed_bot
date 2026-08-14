@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import type { ChatConfig, ChatMessage, DeepPartial } from "./types";
 import { defaultChatConfig, deepMergeChatConfig } from "./types";
 import ChatHeader from "./components/ChatHeader";
@@ -12,11 +12,16 @@ import {
   createNewChatSessionApi,
   sendAgentChatMessageApi,
   getChatSessionDetailsApi,
+  pollingOnSessionDetailsApi,
 } from "./api/chat.api";
 import {
   getChatSession,
   setChatSession,
 } from "./helpers/session-storage.helper";
+import type { CSSProperties } from "react";
+
+const POLLING_INTERVAL_MS = 1500;
+const MAX_POLLING_ATTEMPTS = 60; // 1.5s * 60 = 90s max
 
 interface ChatWidgetProps {
   chatbotId?: string;
@@ -30,6 +35,7 @@ interface ChatWidgetInfo {
   isFetchingBot: boolean;
   sessionId: string | null;
   fetchedConfig: DeepPartial<ChatConfig> | null;
+  pollingAiMessageId: string | null;
 }
 
 export default function ChatWidget({
@@ -43,11 +49,15 @@ export default function ChatWidget({
     isFetchingBot: !!chatbotId,
     sessionId: null,
     fetchedConfig: null,
+    pollingAiMessageId: null,
   });
 
   const [isOpen, setIsOpen] = useState(isPopupOpen);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollingAttemptRef = useRef(0);
 
   // Merge default config -> fetched config from API -> local prop overrides
   const baseWithFetched = chatWidgetInfo.fetchedConfig
@@ -57,6 +67,13 @@ export default function ChatWidget({
     baseWithFetched,
     configOverrides,
   );
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      stopPolling();
+    };
+  }, []);
 
   // Fetch bot details if chatbotId is provided
   useEffect(() => {
@@ -80,6 +97,53 @@ export default function ChatWidget({
       getSessionDetailsFunction(sessionExist);
     }
   }, [chatbotId]);
+
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+    pollingAttemptRef.current = 0;
+    setChatWidgetInfo((prev) => ({ ...prev, pollingAiMessageId: null }));
+  };
+
+  const startPolling = (sessionId: string, aiMessageId: string) => {
+    stopPolling();
+    setChatWidgetInfo((prev) => ({ ...prev, pollingAiMessageId: aiMessageId }));
+
+    pollingRef.current = setInterval(async () => {
+      pollingAttemptRef.current += 1;
+
+      if (pollingAttemptRef.current >= MAX_POLLING_ATTEMPTS) {
+        stopPolling();
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await pollingOnSessionDetailsApi(chatbotId!, sessionId);
+        if (res.success && res.data?.messages) {
+          setMessages(res.data.messages);
+
+          const aiMessage: ChatMessage | undefined = res.data.messages.find(
+            (msg: ChatMessage) => msg._id === aiMessageId,
+          );
+
+          if (
+            aiMessage &&
+            (aiMessage.status === "completed" || aiMessage.status === "failed")
+          ) {
+            stopPolling();
+            setLoading(false);
+          }
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
+        stopPolling();
+        setLoading(false);
+      }
+    }, POLLING_INTERVAL_MS);
+  };
 
   const initBotAndSession = async () => {
     setChatWidgetInfo((prev) => ({
@@ -141,6 +205,7 @@ export default function ChatWidget({
         content,
         timestamp: new Date(),
         order: messages.length + 1,
+        status: "completed",
       };
       setMessages((prev) => [...prev, userMessage]);
 
@@ -152,7 +217,8 @@ export default function ChatWidget({
             role: "ai",
             content: `Thanks for your message! This is a placeholder reply from ${config.general.botName}.`,
             timestamp: new Date(),
-            order: messages.length + 1,
+            order: messages.length + 2,
+            status: "completed",
           };
           setMessages((prev) => [...prev, botMessage]);
         }, 800);
@@ -188,22 +254,32 @@ export default function ChatWidget({
             content,
           );
 
-          if (agentRes.success && agentRes.data?.messages) {
-            setMessages(agentRes.data.messages);
+          console.log("agentResagentRes", agentRes);
+
+          if (agentRes.status === 200 && agentRes.data?.data) {
+            setMessages(agentRes.data.data.messages);
+
+            // Start polling if we got an aiMessageId
+            const aiMessageId = agentRes.data?.aiMessageId;
+            console.log(aiMessageId);
+            if (aiMessageId) {
+              startPolling(currentSessionId, aiMessageId);
+            } else {
+              setLoading(false);
+            }
           } else {
-            const replyText =
-              agentRes.otherData?.aiMessage ||
-              agentRes.otherData?.aiResponse?.output ||
-              "Sorry, I couldn't generate a response.";
+            const replyText = "Sorry, I couldn't generate a response.";
 
             const botMessage: ChatMessage = {
               _id: `bot-${Date.now()}`,
               role: "ai",
               content: replyText,
               timestamp: new Date(),
-              order: messages.length + 1,
+              order: messages.length + 2,
+              status: "completed",
             };
             setMessages((prev) => [...prev, botMessage]);
+            setLoading(false);
           }
         }
       } catch (err: any) {
@@ -215,15 +291,27 @@ export default function ChatWidget({
             err?.response?.data?.message ||
             "Failed to reach the assistant. Please try again.",
           timestamp: new Date(),
-          order: messages.length + 1,
+          order: messages.length + 2,
+          status: "failed",
         };
         setMessages((prev) => [...prev, errorMessage]);
-      } finally {
         setLoading(false);
       }
     },
     [chatbotId, config.general.botName, chatWidgetInfo.sessionId],
   );
+
+  const postPassingMessageFunction = (properties: CSSProperties): void => {
+    const payload: {
+      type: "resize";
+      properties: CSSProperties;
+    } = {
+      type: "resize",
+      properties,
+    };
+
+    window.parent.postMessage(payload, "*");
+  };
 
   if (
     chatbotId &&
@@ -233,11 +321,11 @@ export default function ChatWidget({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+    <div className="fixed bottom-1 right-1 z-50 flex flex-col items-end gap-4">
       {/* Chat Popup */}
       {isOpen && (
         <div
-          className="flex flex-col overflow-hidden border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#1a1a2e]"
+          className="flex flex-col overflow-hidden border border-gray-200 bg-white dark:border-white/10 dark:bg-[#1a1a2e]"
           style={{
             width: "380px",
             height: "520px",
@@ -251,7 +339,8 @@ export default function ChatWidget({
               ? { borderColor: config.theme.borderColor }
               : {}),
             borderRadius: `${config.theme.borderRadius}px`,
-            animation: "chatWidgetPopIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+            animation:
+              "chatWidgetPopIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
             transformOrigin: "bottom right",
           }}
         >
@@ -267,10 +356,26 @@ export default function ChatWidget({
               }
             }
           `}</style>
-          <ChatHeader config={config} onClose={() => setIsOpen(false)} />
+          <ChatHeader
+            config={config}
+            onClose={() => {
+              setIsOpen(false);
+
+              postPassingMessageFunction({
+                width: "65px",
+                height: "65px",
+              });
+            }}
+          />
 
           <ChatMessageList
-            messages={messages}
+            messages={
+              chatWidgetInfo.pollingAiMessageId
+                ? messages.filter(
+                    (msg) => msg._id !== chatWidgetInfo.pollingAiMessageId,
+                  )
+                : messages
+            }
             config={config}
             loading={loading}
           />
@@ -280,7 +385,23 @@ export default function ChatWidget({
       )}
 
       {/* Floating Trigger */}
-      <ChatTrigger config={config} onClick={() => setIsOpen((prev) => !prev)} />
+      <ChatTrigger
+        config={config}
+        onClick={() => {
+          if (isOpen) {
+            postPassingMessageFunction({
+              width: "65px",
+              height: "65px",
+            });
+          } else {
+            postPassingMessageFunction({
+              width: "430px",
+              height: "620px",
+            });
+          }
+          setIsOpen((prev) => !prev);
+        }}
+      />
     </div>
   );
 }

@@ -63,7 +63,7 @@ export const sendAgentChatMessageApi = async (
   const response = await chatAxios.post(`/chat/${chatbotId}/${sessionId}`, {
     inputQuestion,
   });
-  return response.data;
+  return response;
 };
 
 /**
@@ -74,5 +74,15 @@ export const getChatSessionDetailsApi = async (
   sessionId: string,
 ) => {
   const response = await chatAxios.get(`/chat/${chatbotId}/${sessionId}`);
+  return response.data;
+};
+
+export const pollingOnSessionDetailsApi = async (
+  chatbotId: string,
+  sessionId: string,
+) => {
+  const response = await chatAxios.get(
+    `/chat/polling/${chatbotId}/${sessionId}`,
+  );
   return response.data;
 };

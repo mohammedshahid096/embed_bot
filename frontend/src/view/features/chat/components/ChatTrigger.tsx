@@ -17,11 +17,11 @@ export default function ChatTrigger({ config, onClick }: ChatTriggerProps) {
   return (
     <button
       onClick={onClick}
-      className="flex h-14 items-center justify-center gap-2 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 overflow-hidden flex-shrink-0 cursor-pointer"
+      className="flex h-14 items-center justify-center gap-2  transition-all duration-300 hover:scale-105  active:scale-95 overflow-hidden flex-shrink-0 cursor-pointer"
       style={{
         backgroundColor: bg,
         color: textColor,
-        boxShadow: `0 8px 24px ${bg}40`,
+        // boxShadow: `0 8px 24px ${bg}40`,
         borderRadius: `${config.button.borderRadius ?? 28}px`,
         width: `${actualWidth}px`,
         minWidth: `${actualWidth}px`,

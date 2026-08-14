@@ -1,6 +1,10 @@
 import { organisationAction, type OrganisationActionType } from "./action";
-import { initialOrganisationState } from "./state";
 import type { OrganisationStateType } from "@/types/context/organisation.types";
+
+export const initialOrganisationState: OrganisationStateType = {
+  organisationDetails: null,
+  chatBotDetails: null,
+};
 
 interface OrganisationReducerAction {
   type: OrganisationActionType;

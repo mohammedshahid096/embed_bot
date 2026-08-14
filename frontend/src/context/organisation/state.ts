@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { organisationReducer } from "./reducer";
+import { organisationReducer, initialOrganisationState } from "./reducer";
 import { organisationAction } from "./action";
 import type { OrganisationStateType } from "@/types/context/organisation.types";
 import { getOrganisationDetailsApi } from "@/api/organisation.api";
@@ -7,11 +7,6 @@ import {
   getChatBotDetailsApi,
   updateChatBotDetailsApi,
 } from "@/api/chatbot.api";
-
-export const initialOrganisationState: OrganisationStateType = {
-  organisationDetails: null,
-  chatBotDetails: null,
-};
 
 export const useOrganisationState = () => {
   const [state, dispatch] = useReducer(

@@ -1,6 +1,9 @@
 import { userProfileAction, type UserProfileActionType } from "./action";
-import { initialUserprofileState } from "./state";
 import type { UserProfileStateType } from "@/types/context/userProfile.types";
+
+export const initialUserprofileState: UserProfileStateType = {
+  profileDetails: null,
+};
 
 interface UserProfileReducerAction {
   type: UserProfileActionType;

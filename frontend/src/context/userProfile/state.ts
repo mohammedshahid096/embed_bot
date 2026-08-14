@@ -1,12 +1,8 @@
 import { useReducer } from "react";
-import { userProfileReducer } from "./reducer";
+import { userProfileReducer, initialUserprofileState } from "./reducer";
 import { userProfileAction } from "./action";
 import type { UserProfileStateType } from "@/types/context/userProfile.types";
 import { getMyUserProfileApi } from "@/api/user.api";
-
-export const initialUserprofileState: UserProfileStateType = {
-  profileDetails: null,
-};
 
 export const useUserprofileState = () => {
   const [state, dispatch] = useReducer(

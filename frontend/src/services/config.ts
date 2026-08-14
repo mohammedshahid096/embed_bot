@@ -5,12 +5,14 @@ type EnvMode = "development" | "production";
 interface ServerConfig {
   API_SERVER: string;
   API_SERVER_BASE_URL: string;
+  CLIENT_BASE_URL: string;
 }
 
 // Development configuration
 const development: ServerConfig = {
   API_SERVER: "http://localhost:8000/api/v1",
   API_SERVER_BASE_URL: "http://localhost:8000",
+  CLIENT_BASE_URL: "http://localhost:3000",
 };
 
 // Production configuration
@@ -19,6 +21,9 @@ const production: ServerConfig = {
   API_SERVER_BASE_URL: import.meta.env.VITE_BACKEND_SERVER_URL
     ? `${import.meta.env.VITE_BACKEND_SERVER_URL}`
     : "http://localhost:8000",
+  CLIENT_BASE_URL: import.meta.env.VITE_CLIENT_BASE_URL
+    ? import.meta.env.VITE_CLIENT_BASE_URL
+    : "http://localhost:3000",
 };
 
 // Map environments to configs

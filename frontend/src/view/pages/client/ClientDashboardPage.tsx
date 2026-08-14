@@ -7,6 +7,7 @@ import MessagesChart from "@/view/features/dashboard/components/MessagesChart";
 import TokenUsageChart from "@/view/features/dashboard/components/TokenUsageChart";
 import RecentSessions from "@/view/features/dashboard/components/RecentSessions";
 import KnowledgeBaseStatus from "@/view/features/dashboard/components/KnowledgeBaseStatus";
+import EmbedScriptCard from "@/view/features/dashboard/components/EmbedScriptCard";
 
 const ClientDashboardPage = () => {
   const {
@@ -104,6 +105,9 @@ const ClientDashboardPage = () => {
                 stats={dashboardData.stats}
                 tokenUsage={dashboardData.tokenUsage}
               />
+
+              {/* Embed Script Card */}
+              <EmbedScriptCard chatBotId={dashboardData.chatBotId} />
 
               {/* Charts Row */}
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

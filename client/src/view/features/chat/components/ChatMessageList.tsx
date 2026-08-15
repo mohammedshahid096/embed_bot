@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Bot, AlertCircle } from "lucide-react";
 import type { ChatMessage, ChatConfig } from "../types";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface ChatMessageListProps {
   messages: ChatMessage[];
@@ -120,9 +121,13 @@ export default function ChatMessageList({
                   <span>Error</span>
                 </div>
               )}
-              {msg.error ||
-                msg.content ||
-                (isFailed ? "Something went wrong. Please try again." : "")}
+              <MarkdownRenderer
+                answer={
+                  msg.error ||
+                  msg.content ||
+                  (isFailed ? "Something went wrong. Please try again." : "")
+                }
+              />
             </div>
           </div>
         );

@@ -54,12 +54,14 @@ class AgentService {
   private buildMessageHistory(history: IMessage[] = []): BaseMessage[] {
     const recentHistory = history.slice(-this.historyCount);
 
-    return recentHistory.map((message) => {
-      if (message.role === "human") {
-        return new HumanMessage(message.content ?? "");
-      }
-      return new AIMessage(message.content ?? "");
-    });
+    return recentHistory
+      ?.filter((message) => message.status !== "failed")
+      .map((message) => {
+        if (message.role === "human") {
+          return new HumanMessage(message.content ?? "");
+        }
+        return new AIMessage(message.content ?? "");
+      });
   }
 
   async processRequest(

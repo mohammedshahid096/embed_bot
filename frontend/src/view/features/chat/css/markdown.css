@@ -1,0 +1,56 @@
+/* Markdown CSS Styles */
+@import "tailwindcss";
+
+/* Markdown Styles - TailwindCSS (light & dark) */
+#markdown_div h1 {
+  @apply text-base font-bold my-2;
+}
+#markdown_div h2 {
+  @apply text-sm font-bold my-1.5;
+}
+#markdown_div h3 {
+  @apply text-xs font-bold my-1;
+}
+#markdown_div h4,
+#markdown_div h5,
+#markdown_div h6 {
+  @apply text-xs font-semibold my-1;
+}
+#markdown_div p {
+  @apply text-xs leading-relaxed my-1;
+}
+#markdown_div ul,
+#markdown_div ol {
+  @apply mt-1 mb-2 pl-5 text-xs;
+}
+#markdown_div li {
+  @apply mb-1 text-xs;
+}
+#markdown_div a {
+  @apply text-blue-600 dark:text-blue-400 underline text-xs;
+}
+#markdown_div code {
+  @apply px-1 py-0.5 rounded font-mono text-[11px];
+}
+#markdown_div pre {
+  @apply p-3 rounded-lg overflow-x-auto font-mono text-[11px] mb-2;
+}
+#markdown_div blockquote {
+  @apply border-l-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 my-2 text-xs text-gray-600 dark:text-gray-300;
+}
+#markdown_div img {
+  @apply max-w-full h-auto block my-2;
+}
+#markdown_div hr {
+  @apply border-0 border-t my-4;
+}
+#markdown_div table {
+  @apply w-full border-collapse my-2 overflow-hidden text-xs;
+}
+
+#markdown_div th {
+  @apply border-b-2 border-gray-400 pb-1 text-xs font-bold text-left;
+}
+#markdown_div td {
+  @apply border-b border-gray-500 px-2 py-1 text-left text-xs;
+}

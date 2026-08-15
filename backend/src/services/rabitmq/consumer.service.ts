@@ -7,6 +7,7 @@ import {
 } from "../../types/rabbitmq/payload.type";
 import { cyan } from "colorette";
 import messageProcessHandler from "./handlers/messageProcess.handler";
+import logger from "../../config/logger.config";
 
 class RabbitMQConsumer {
   constructor() {}
@@ -53,6 +54,10 @@ class RabbitMQConsumer {
           job: string;
           data: IChatMessagePayload;
         };
+
+        logger.info(
+          `consumer.Service - chatMessageConsumer ==> Received message for job: ${content.job}`,
+        );
 
         await messageProcessHandler(content);
 

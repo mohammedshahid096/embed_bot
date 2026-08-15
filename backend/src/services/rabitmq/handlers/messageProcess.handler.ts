@@ -5,6 +5,7 @@ import { IChatMessagePayload } from "../../../types/rabbitmq/payload.type";
 import AgentService from "../../agent.service";
 import RedisServiceClass from "../../redis.service";
 import redisExpiryTime from "../../../constants/redis.constant";
+import logger from "../../../config/logger.config";
 
 const messageProcessHandler = async (message: {
   job: string;
@@ -14,7 +15,9 @@ const messageProcessHandler = async (message: {
 
   switch (job) {
     case queueJobs.chat_message:
-      console.log("Queue Job :", job, data);
+      logger.info(
+        "messageProcessHandler - chatMessageConsumer chat_message_queue",
+      );
 
       const agentService = new AgentService({
         sessionId: data.sessionId,
@@ -55,7 +58,10 @@ const messageProcessHandler = async (message: {
           { new: true },
         );
       } catch (error) {
-        console.log(error, "message Processing");
+        logger.error(
+          "messageProcessHandler - chatMessageConsumer chat_message_queue",
+          error,
+        );
         updateAiMessage = await ChatMessageModel.findOneAndUpdate(
           { "messages._id": messageId },
           {

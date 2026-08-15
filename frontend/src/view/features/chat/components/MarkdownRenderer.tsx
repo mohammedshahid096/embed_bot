@@ -101,6 +101,13 @@ const MarkdownRenderer = ({ answer }: MarkdownRendererProps) => {
             // Skip wrapping block elements in <p>
             return <>{children}</>;
           },
+          table({ node, children, ...props }: any) {
+            return (
+              <div className="w-full overflow-x-auto my-2 rounded border border-gray-200 dark:border-gray-700">
+                <table {...props}>{children}</table>
+              </div>
+            );
+          },
         }}
         remarkPlugins={[remarkGfm]}
       >

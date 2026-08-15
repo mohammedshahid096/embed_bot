@@ -4,6 +4,7 @@ import errorHandling, { AppError } from "../utils/errorHandling.util";
 import { verifyAccessToken } from "../utils/jwt.util";
 import UserModel from "../schema/user.model";
 import config from "../config/index.config";
+import logger from "../config/logger.config";
 
 export const Authentication = async (
   req: Request,
@@ -33,7 +34,7 @@ export const Authentication = async (
       name: userExist?.name,
       organisationId: userExist?.organisationId,
     };
-    console.log(`name : ${userExist.name} email: ${userExist.email}`);
+    logger.info(`name : ${userExist.name} email: ${userExist.email}`);
     next();
   } catch (error) {
     errorHandling.handlingControllersError(error as AppError, next);
@@ -61,7 +62,7 @@ export const DevelopmentAuthentication = async (
       name: userExist?.name,
       organisationId: userExist?.organisationId,
     };
-    console.log(`name : ${userExist.name} email: ${userExist.email}`);
+    logger.info(`name : ${userExist.name} email: ${userExist.email}`);
 
     next();
   } catch (error) {

@@ -26,6 +26,7 @@
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "dayjs": "^1.11.21",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
@@ -35,7 +36,8 @@
     "jsdom": "^29.1.1",
     "jsonwebtoken": "^9.0.3",
     "langchain": "^1.5.3",
-    "mongoose": "^9.7.4"
+    "mongoose": "^9.7.4",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.8",

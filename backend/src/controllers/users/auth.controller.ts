@@ -25,6 +25,7 @@ import {
   hashPasswordMethod,
   verifyPasswordMethod,
 } from "../../utils/bcrypt.util";
+import logger from "../../config/logger.config";
 
 export const sendRegisterVerificationLinkController = async (
   req: Request,
@@ -32,6 +33,9 @@ export const sendRegisterVerificationLinkController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - users - auth.controller - sendRegisterVerificationLinkController - Start",
+    );
     const { email, password, name } = req.body as RegisterUserBody;
 
     const isUserExist = await UserModel.findOne({ email });
@@ -76,11 +80,19 @@ export const sendRegisterVerificationLinkController = async (
 
     await redisService.setRedisJSON(email, cacheVerificationDetails);
 
+    logger.info(
+      "controllers - users - auth.controller - sendRegisterVerificationLinkController - End",
+    );
+
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "verification link sent successfully",
     });
   } catch (error) {
+    logger.error(
+      "controllers - users - auth.controller - sendRegisterVerificationLinkController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -91,6 +103,9 @@ export const verifyRegisterVerificationLinkController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - users - auth.controller - verifyRegisterVerificationLinkController - Start",
+    );
     const { token } = req.query as { token: string };
 
     const verfifyResult = await verifyVerificationToken(token);
@@ -129,12 +144,19 @@ export const verifyRegisterVerificationLinkController = async (
     });
     await newUser.save();
     await redisService.deleteRedisKey(verificationCacheData?.email);
+    logger.info(
+      "controllers - users - auth.controller - verifyRegisterVerificationLinkController - End",
+    );
 
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 201,
       message: "User registered successfully",
     });
   } catch (error) {
+    logger.error(
+      "controllers - users - auth.controller - verifyRegisterVerificationLinkController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -145,6 +167,9 @@ export const loginAuthController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - users - auth.controller - loginAuthController - Start",
+    );
     const { email, password } = req.body as LoginAuthBody;
 
     const user = await UserModel.findOneAndUpdate(
@@ -169,6 +194,9 @@ export const loginAuthController = async (
     sendAccessTokenCookie(res, accessToken);
     sendRefreshTokenCookie(res, refreshToken);
 
+    logger.info(
+      "controllers - users - auth.controller - loginAuthController - End",
+    );
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "User logged in successfully",
@@ -178,6 +206,10 @@ export const loginAuthController = async (
       },
     });
   } catch (error) {
+    logger.error(
+      "controllers - users - auth.controller - loginAuthController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -188,14 +220,24 @@ export const logoutAuthController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - users - auth.controller - logoutAuthController - Start",
+    );
     res.clearCookie("access_token");
     res.clearCookie("refresh_token");
 
+    logger.info(
+      "controllers - users - auth.controller - logoutAuthController - End",
+    );
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "User logged out successfully",
     });
   } catch (error) {
+    logger.error(
+      "controllers - users - auth.controller - logoutAuthController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -247,10 +289,16 @@ export const checkEmailExistenceController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - users - auth.controller - checkEmailExistenceController - Start",
+    );
     const { email } = req.query as { email: string };
 
     const user = await UserModel.findOne({ email }).select("_id").lean();
 
+    logger.info(
+      "controllers - users - auth.controller - checkEmailExistenceController - End",
+    );
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "Email availability checked successfully",
@@ -259,6 +307,10 @@ export const checkEmailExistenceController = async (
       },
     });
   } catch (error) {
+    logger.error(
+      "controllers - users - auth.controller - checkEmailExistenceController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -269,6 +321,9 @@ export const checkRegisterVerificationLinkController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - users - auth.controller - checkRegisterVerificationLinkController - End",
+    );
     const { token } = req.query as { token: string };
 
     let isTokenValid = true;
@@ -284,6 +339,9 @@ export const checkRegisterVerificationLinkController = async (
     if (!verificationCacheData) {
       isTokenValid = false;
     }
+    logger.info(
+      "controllers - users - auth.controller - checkRegisterVerificationLinkController - End",
+    );
 
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
@@ -293,6 +351,10 @@ export const checkRegisterVerificationLinkController = async (
       },
     });
   } catch (error) {
+    logger.error(
+      "controllers - users - auth.controller - checkRegisterVerificationLinkController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };

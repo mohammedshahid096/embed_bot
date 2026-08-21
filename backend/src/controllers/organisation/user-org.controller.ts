@@ -10,6 +10,7 @@ import RabbitMQProducer from "../../services/rabitmq/producer.service";
 import CrawlJobModel from "../../schema/crawljob.model";
 import KnowledgeBaseModel from "../../schema/knowledgebase.model";
 import ChatBotModel from "../../schema/chatbot.model";
+import logger from "../../config/logger.config";
 
 export const onBoardingOrganisationController = async (
   req: Request,
@@ -17,6 +18,9 @@ export const onBoardingOrganisationController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - organisation - user-org.controller - onBoardingOrganisationController - Start",
+    );
     const userId = req?.authUser?._id;
     const onBoardOrgDetails = req.body as OnBoardOrganisationBody;
     const isOrgExist = await OrganizationModel.findOne({ userId });
@@ -34,12 +38,20 @@ export const onBoardingOrganisationController = async (
       organizationId: newOrgDetails?._id,
       allowedDomains: [onBoardOrgDetails?.website || ""],
     });
+
+    logger.info(
+      "controllers - organisation - user-org.controller - onBoardingOrganisationController - End",
+    );
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 201,
       message: "Organisation Onboarded Successfully",
       data: newOrgDetails,
     });
   } catch (error) {
+    logger.error(
+      "controllers - organisation - user-org.controller - onBoardingOrganisationController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -50,11 +62,17 @@ export const getUserOrganisationDetailsController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - organisation - user-org.controller - getUserOrganisationDetailsController - Start",
+    );
     const userId = req?.authUser?._id;
 
     const orgDetails = await OrganizationModel.findOne({ userId });
     if (!orgDetails) return next(httpErrors.NotFound("Organisation not found"));
 
+    logger.info(
+      "controllers - organisation - user-org.controller - getUserOrganisationDetailsController - End",
+    );
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "Organisation Details Fetched Successfully",
@@ -63,6 +81,10 @@ export const getUserOrganisationDetailsController = async (
       },
     });
   } catch (error) {
+    logger.error(
+      "controllers - organisation - user-org.controller - getUserOrganisationDetailsController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -73,6 +95,9 @@ export const updateUserOrganisationDetailsController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - organisation - user-org.controller - updateUserOrganisationDetailsController - Start",
+    );
     const userId = req?.authUser?._id;
     const { name, email, address, contact, description } = req.body;
 
@@ -93,12 +118,19 @@ export const updateUserOrganisationDetailsController = async (
       return next(httpErrors.NotFound("Organisation not found"));
     }
 
+    logger.info(
+      "controllers - organisation - user-org.controller - updateUserOrganisationDetailsController - End",
+    );
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "Organisation Details Updated Successfully",
       data: updatedOrg,
     });
   } catch (error) {
+    logger.error(
+      "controllers - organisation - user-org.controller - updateUserOrganisationDetailsController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -109,6 +141,9 @@ export const extractUserOrganisationWebsiteUrlsController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - organisation - user-org.controller - extractUserOrganisationWebsiteUrlsController - Start",
+    );
     const organisationWebsite = req?.organisation?.website;
 
     const cheerioWebsiteUrlService = new CheerioWebsiteUrls({
@@ -116,12 +151,19 @@ export const extractUserOrganisationWebsiteUrlsController = async (
     });
     const websiteUrls = await cheerioWebsiteUrlService.getWebsiteUrls();
 
+    logger.info(
+      "controllers - organisation - user-org.controller - extractUserOrganisationWebsiteUrlsController - End",
+    );
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "Website urls fetched successfully",
       data: websiteUrls ?? [],
     });
   } catch (error) {
+    logger.error(
+      "controllers - organisation - user-org.controller - extractUserOrganisationWebsiteUrlsController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };
@@ -132,6 +174,9 @@ export const scrapeWebsitesController = async (
   next: NextFunction,
 ) => {
   try {
+    logger.info(
+      "controllers - organisation - user-org.controller - scrapeWebsitesController - Start",
+    );
     const organisationId = req?.organisation?._id;
 
     const { selectedUrls } = req.body as { selectedUrls: string[] };
@@ -180,6 +225,9 @@ export const scrapeWebsitesController = async (
       }
     }
 
+    logger.info(
+      "controllers - organisation - user-org.controller - scrapeWebsitesController - End",
+    );
     responseHandlingUtil.successResponseStandard(res, {
       statusCode: 200,
       message: "Website content scrapping started",
@@ -189,6 +237,10 @@ export const scrapeWebsitesController = async (
       },
     });
   } catch (error) {
+    logger.error(
+      "controllers - organisation - user-org.controller - scrapeWebsitesController - Error",
+      error,
+    );
     errorHandling.handlingControllersError(error as AppError, next);
   }
 };

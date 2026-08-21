@@ -322,7 +322,7 @@ export const checkRegisterVerificationLinkController = async (
 ) => {
   try {
     logger.info(
-      "controllers - users - auth.controller - checkRegisterVerificationLinkController - End",
+      "controllers - users - auth.controller - checkRegisterVerificationLinkController - Start",
     );
     const { token } = req.query as { token: string };
 

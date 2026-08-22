@@ -1,7 +1,8 @@
-import { queueNames } from "../../constants/rabbitmq.constant";
+import { queueJobs, queueNames } from "../../constants/rabbitmq.constant";
 import { getRabbitMQChannel } from "../../config/rabitmq.config";
 import websiteScrapperHandler from "./handlers/websiteScrapper.handler";
 import {
+  IAddToKnowledgeBasePayload,
   IChatMessagePayload,
   IWebsiteScrapperPayload,
 } from "../../types/rabbitmq/payload.type";
@@ -20,17 +21,42 @@ class RabbitMQConsumer {
 
   private async websiteScrapperConsumer(): Promise<void> {
     const channel = await getRabbitMQChannel();
-    await channel.assertQueue(queueNames.scrapping_queue, { durable: false });
+    await channel.assertQueue(queueNames.knowledgeBase, { durable: false });
     channel.prefetch(1);
 
-    channel.consume(queueNames.scrapping_queue, async (msg) => {
+    channel.consume(queueJobs.website_scrapping, async (msg) => {
       if (!msg) return;
       try {
         const content = JSON.parse(msg.content.toString()) as {
           job: string;
           data: IWebsiteScrapperPayload;
         };
+
+        logger.info(
+          `consumer.Service - chatMessageConsumer ==> Received message for job: ${content.job}`,
+        );
+
         await websiteScrapperHandler(content);
+
+        channel.ack(msg);
+      } catch (error) {
+        console.log(error);
+        channel.nack(msg);
+      }
+    });
+
+    channel.consume(queueJobs.add_to_knowledge_base, async (msg) => {
+      if (!msg) return;
+      try {
+        const content = JSON.parse(msg.content.toString()) as {
+          job: string;
+          data: IAddToKnowledgeBasePayload;
+        };
+        logger.info(
+          `consumer.Service - chatMessageConsumer ==> Received message for job: ${content.job}`,
+        );
+
+        // await addToKnowledgeBaseHandler(content);
 
         channel.ack(msg);
       } catch (error) {

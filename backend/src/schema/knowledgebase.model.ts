@@ -13,6 +13,10 @@ export interface KnowledgeBaseInterface extends Document {
   chunkCount: number;
   content: string;
   vectorNamespace: string;
+  faqItems: {
+    question: string;
+    answer: string;
+  }[];
   order: number;
   createdAt: Date;
   updatedAt: Date;
@@ -53,6 +57,10 @@ const knowledgeBaseSchema = new Schema<KnowledgeBaseInterface>(
     },
     vectorNamespace: {
       type: String,
+    },
+    faqItems: {
+      type: [{ question: String, answer: String }],
+      default: [],
     },
     order: {
       type: Number,

@@ -4,6 +4,10 @@ export interface IWebsiteScrapperPayload {
   knowledgeBaseId: string;
   crawlJobId: string;
 }
+export interface IAddToKnowledgeBasePayload {
+  organisationId: string;
+  sourceType: "faq";
+}
 
 export interface IChatMessagePayload {
   message: string;

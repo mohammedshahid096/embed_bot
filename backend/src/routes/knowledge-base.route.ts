@@ -1,7 +1,14 @@
 import { Router } from "express";
-import { Authentication } from "../middlewares/auth.middleware";
+import {
+  Authentication,
+  DevelopmentAuthentication,
+} from "../middlewares/auth.middleware";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
-import { getOrganisationKnowledgeBasesController } from "../controllers/organisation/knowledge-base.controller";
+import {
+  addFaqToKnowledgeBaseController,
+  getOrganisationKnowledgeBasesController,
+} from "../controllers/organisation/knowledge-base.controller";
+import { addFaqToKnowledgeBaseValidation } from "../validation/organisation/knowledge-base.joi";
 
 const knowledgeBaseRoutes = Router();
 
@@ -11,6 +18,15 @@ knowledgeBaseRoutes
     Authentication,
     OrganisationMiddleware,
     getOrganisationKnowledgeBasesController,
+  );
+
+knowledgeBaseRoutes
+  .route("/add/faq")
+  .post(
+    DevelopmentAuthentication,
+    OrganisationMiddleware,
+    addFaqToKnowledgeBaseValidation,
+    addFaqToKnowledgeBaseController,
   );
 
 export default knowledgeBaseRoutes;

@@ -9,30 +9,34 @@ import {
   CheerioWebsiteScrapping,
 } from "../../../services/cheerio.service";
 import OpenRouterService from "../../../services/open-router.service";
-import { IWebsiteScrapperPayload } from "../../../types/rabbitmq/payload.type";
+import {
+  IAddToKnowledgeBasePayload,
+  IWebsiteScrapperPayload,
+} from "../../../types/rabbitmq/payload.type";
 import ChromaService from "../../chroma.service";
 
 const websiteScrapperHandler = async (message: {
   job: string;
-  data: IWebsiteScrapperPayload;
+  data: IWebsiteScrapperPayload | IAddToKnowledgeBasePayload;
 }) => {
   const { job, data } = message;
 
-  switch (job) {
-    case queueJobs.website_scrapping:
+  const jobHandlersObject = {
+    [queueJobs.website_scrapping]: async () => {
+      const { url, crawlJobId, knowledgeBaseId, organisationId } =
+        data as IWebsiteScrapperPayload;
       console.log("Queue Job :", job, data);
-      const crawlExist = await CrawlJobModel.findById(data.crawlJobId);
+      const crawlExist = await CrawlJobModel.findById(crawlJobId);
       if (!crawlExist) {
         console.log("Crawl job not found");
         return "";
       }
       if (crawlExist.status === "pending") {
         await CrawlJobModel.updateOne(
-          { _id: data.crawlJobId },
+          { _id: crawlJobId },
           { $set: { status: "running" } },
         );
       }
-      const { url, crawlJobId, knowledgeBaseId, organisationId } = data;
 
       const cheerioWebsiteUrlService = new CheerioWebsiteScrapping({
         url,
@@ -124,12 +128,23 @@ const websiteScrapperHandler = async (message: {
       }
 
       return cleanedContent;
-      break;
+    },
+    [queueJobs.add_faq_to_knowledge_base]: async () => {
+      const { organisationId, knowledgeBaseId } =
+        data as IAddToKnowledgeBasePayload;
 
-    default:
-      console.log("Unknown job:", job);
-      return "";
-  }
+      console.log(organisationId, knowledgeBaseId, "recedidf");
+      const existingData = await KnowledgeBaseModel.findById(knowledgeBaseId);
+
+      if (!existingData) {
+        console.log("Knowledge base not found");
+        return "";
+      }
+    },
+    [queueJobs.add_text_to_knowledge_base]: async () => {},
+  };
+
+  return jobHandlersObject[job] ? jobHandlersObject[job]() : "";
 };
 
 export default websiteScrapperHandler;

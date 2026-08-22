@@ -3,6 +3,7 @@ import errorHandling, { AppError } from "../../utils/errorHandling.util";
 import responseHandlingUtil from "../../utils/responseHandling.util";
 import KnowledgeBaseModel from "../../schema/knowledgebase.model";
 import logger from "../../config/logger.config";
+import RabbitMQProducer from "../../services/rabitmq/producer.service";
 
 export const getOrganisationKnowledgeBasesController = async (
   req: Request,
@@ -51,6 +52,13 @@ export const addFaqToKnowledgeBaseController = async (
     });
 
     await faqKnowledgeBase.save();
+
+    const rabbitMqService = new RabbitMQProducer();
+    rabbitMqService.addToKnowledgeBaseProducer("faq", {
+      organisationId: organisationId!.toString(),
+      knowledgeBaseId: faqKnowledgeBase._id.toString(),
+    });
+
     logger.info(
       "controllers - organisation - knowledge-base.controller - addFaqToKnowledgeBaseController - End",
     );

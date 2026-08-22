@@ -20,7 +20,7 @@ class RabbitMQProducer {
       `producer.Service ==> Sending message for job: ${queueJobs.website_scrapping}`,
     );
     const published = channel.sendToQueue(
-      queueJobs.website_scrapping,
+      queueNames.knowledgeBase,
       Buffer.from(JSON.stringify({ job: queueJobs.website_scrapping, data })),
     );
 
@@ -30,19 +30,23 @@ class RabbitMQProducer {
   }
 
   async addToKnowledgeBaseProducer(
+    sourceType: "faq" | "text",
     data: IAddToKnowledgeBasePayload,
   ): Promise<Boolean> {
     const channel = await getRabbitMQChannel();
     await channel.assertQueue(queueNames.knowledgeBase, { durable: false });
 
-    logger.info(
-      `producer.Service ==> Sending message for job: ${queueJobs.add_to_knowledge_base}`,
-    );
+    let queueJobObject = {
+      faq: queueJobs.add_faq_to_knowledge_base,
+      text: queueJobs.add_text_to_knowledge_base,
+    };
+
+    const currentJob = queueJobObject[sourceType];
+    logger.info(`producer.Service ==> Sending message for job:  ${currentJob}`);
+
     const published = channel.sendToQueue(
-      queueJobs.add_to_knowledge_base,
-      Buffer.from(
-        JSON.stringify({ job: queueJobs.add_to_knowledge_base, data }),
-      ),
+      queueNames.knowledgeBase,
+      Buffer.from(JSON.stringify({ job: currentJob, data })),
     );
 
     if (published) return true;

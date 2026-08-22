@@ -6,7 +6,7 @@ export interface IWebsiteScrapperPayload {
 }
 export interface IAddToKnowledgeBasePayload {
   organisationId: string;
-  sourceType: "faq";
+  knowledgeBaseId: string;
 }
 
 export interface IChatMessagePayload {

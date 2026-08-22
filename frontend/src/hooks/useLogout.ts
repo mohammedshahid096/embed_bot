@@ -1,22 +1,28 @@
 import { logoutAuthApi } from "@/api/auth.api";
 import { removeSecondaryAccessToken } from "@/helpers/cookie.helper";
 import { clearAll } from "@/helpers/localstorage.helper";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-
-// import Context from "@/context/context";
+import Context from "@/context/context";
 
 const useLogout = () => {
   const navigate = useNavigate();
-
+  const {
+    userProfileState: { resetUserprofiletStateAction },
+    organisationState: { resetOrganisationStateAction },
+    dashboardState: { resetDashboardStateAction },
+  } = useContext(Context);
   const resetApplications = useCallback(async () => {
-    // setTimeout(() => {
-    // }, 1000);
+    const response = await logoutAuthApi();
 
-    clearAll();
-    removeSecondaryAccessToken();
-    logoutAuthApi();
-    navigate("/");
+    if (response?.[1]?.success) {
+      clearAll();
+      removeSecondaryAccessToken();
+      resetUserprofiletStateAction();
+      resetOrganisationStateAction();
+      resetDashboardStateAction();
+      navigate("/");
+    }
   }, []);
 
   return resetApplications;

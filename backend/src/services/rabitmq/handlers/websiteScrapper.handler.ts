@@ -146,13 +146,15 @@ const websiteScrapperHandler = async (message: {
 
       const documents = existingData?.faqItems?.map((singleFaq) => {
         return cheerioTextSplitter.convertToDocument({
-          content: `Q: ${singleFaq?.question}\nA: ${singleFaq?.answer}`,
+          content: `Q: ${singleFaq?.question}\n A: ${singleFaq?.answer}`,
           source: existingData?.name,
           organisationId,
           knowledgeBaseId,
           type: "faq",
         });
       });
+
+      console.log(documents);
 
       const chunks = await cheerioTextSplitter.generateChunks(documents);
 

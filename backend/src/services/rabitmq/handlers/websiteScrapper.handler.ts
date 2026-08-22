@@ -129,6 +129,7 @@ const websiteScrapperHandler = async (message: {
 
       return cleanedContent;
     },
+
     [queueJobs.add_faq_to_knowledge_base]: async () => {
       const { organisationId, knowledgeBaseId } =
         data as IAddToKnowledgeBasePayload;
@@ -140,6 +141,32 @@ const websiteScrapperHandler = async (message: {
         console.log("Knowledge base not found");
         return "";
       }
+
+      const cheerioTextSplitter = new CheerioTextSplitter();
+
+      const documents = existingData?.faqItems?.map((singleFaq) => {
+        return cheerioTextSplitter.convertToDocument({
+          content: `Q: ${singleFaq?.question}\nA: ${singleFaq?.answer}`,
+          source: existingData?.name,
+          organisationId,
+          knowledgeBaseId,
+          type: "faq",
+        });
+      });
+
+      const chunks = await cheerioTextSplitter.generateChunks(documents);
+
+      const chromaService = new ChromaService({
+        collectionName: `knowledge_base_${organisationId}`,
+      });
+
+      const { chunkCount } = await chromaService.insertToCollection(chunks);
+      await KnowledgeBaseModel.findByIdAndUpdate(knowledgeBaseId, {
+        chunkCount: chunkCount,
+        status: "ready",
+      });
+
+      return true;
     },
     [queueJobs.add_text_to_knowledge_base]: async () => {},
   };

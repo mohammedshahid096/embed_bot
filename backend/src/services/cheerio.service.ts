@@ -150,7 +150,7 @@ export class CheerioTextSplitter {
     source: string;
     knowledgeBaseId: string;
     organisationId: string;
-    type: "website" | "text";
+    type: "website" | "text" | "faq";
   }): Document {
     return new Document({
       pageContent: content,

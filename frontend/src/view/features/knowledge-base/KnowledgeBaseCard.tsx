@@ -133,6 +133,51 @@ const KnowledgeBaseCard = ({ item }: KnowledgeBaseCardProps) => {
         </div>
       )}
 
+      {/* FAQ Items Section */}
+      {item.faqItems && item.faqItems.length > 0 && !item.content && (
+        <div className="mt-3 rounded-lg bg-black/25 p-3 border border-white/5 text-xs space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-muted-foreground/70 tracking-wider uppercase">
+              FAQ Q&A Pairs ({item.faqItems.length})
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex items-center gap-1 text-[11px] text-purple-400 hover:text-purple-300 transition-colors px-1.5 py-0.5 rounded hover:bg-purple-500/10"
+            >
+              <span>{isExpanded ? "Show Less" : "Show More"}</span>
+              {isExpanded ? (
+                <ChevronUp className="h-3 w-3" />
+              ) : (
+                <ChevronDown className="h-3 w-3" />
+              )}
+            </button>
+          </div>
+
+          <div
+            className={`space-y-2 ${
+              isExpanded
+                ? "max-h-60 overflow-y-auto pr-1"
+                : "max-h-24 overflow-hidden"
+            }`}
+          >
+            {item.faqItems.map((faq, idx) => (
+              <div
+                key={idx}
+                className="rounded-md bg-white/5 p-2 border border-white/5 text-[11.5px]"
+              >
+                <p className="font-medium text-foreground/90">
+                  Q: {faq.question}
+                </p>
+                <p className="text-muted-foreground/80 mt-0.5">
+                  A: {faq.answer}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Footer Row */}
       <div className="mt-3 flex items-center justify-between gap-2 pt-2 border-t border-white/5">
         <div className="flex items-center gap-2">

@@ -1,8 +1,5 @@
 import { Router } from "express";
-import {
-  Authentication,
-  DevelopmentAuthentication,
-} from "../middlewares/auth.middleware";
+import { Authentication } from "../middlewares/auth.middleware";
 import { OrganisationMiddleware } from "../middlewares/organisation.middleware";
 import {
   addFaqToKnowledgeBaseController,
@@ -23,7 +20,7 @@ knowledgeBaseRoutes
 knowledgeBaseRoutes
   .route("/add/faq")
   .post(
-    DevelopmentAuthentication,
+    Authentication,
     OrganisationMiddleware,
     addFaqToKnowledgeBaseValidation,
     addFaqToKnowledgeBaseController,

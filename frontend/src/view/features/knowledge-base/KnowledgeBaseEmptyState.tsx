@@ -1,6 +1,11 @@
-import { Database } from "lucide-react";
+import { Database, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-const KnowledgeBaseEmptyState = () => {
+interface KnowledgeBaseEmptyStateProps {
+  onAddFaq?: () => void;
+}
+
+const KnowledgeBaseEmptyState = ({ onAddFaq }: KnowledgeBaseEmptyStateProps) => {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 ring-1 ring-purple-500/20">
@@ -10,9 +15,17 @@ const KnowledgeBaseEmptyState = () => {
         No knowledge bases yet
       </h3>
       <p className="mt-1.5 max-w-sm text-sm text-muted-foreground/60">
-        Your knowledge bases will appear here once you scrape website pages or
-        upload documents from the onboarding flow.
+        Your knowledge bases will appear here once you scrape website pages or add FAQ collections.
       </p>
+      {onAddFaq && (
+        <Button
+          onClick={onAddFaq}
+          className="mt-6 gap-1.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-500 hover:to-blue-500 text-xs shadow-lg shadow-purple-500/25"
+        >
+          <Plus className="h-4 w-4" />
+          Add FAQ Collection
+        </Button>
+      )}
     </div>
   );
 };

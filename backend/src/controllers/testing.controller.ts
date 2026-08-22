@@ -2,10 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import errorHandling, { AppError } from "../utils/errorHandling.util";
 import responseHandlingUtil from "../utils/responseHandling.util";
 import ChromaService from "../services/chroma.service";
-import {
-  CheerioTextSplitter,
-  CheerioWebsiteScrapping,
-} from "../services/cheerio.service";
+
 
 export const testingController2 = async (
   req: Request,

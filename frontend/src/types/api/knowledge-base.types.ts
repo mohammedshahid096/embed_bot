@@ -12,6 +12,17 @@ export interface KnowledgeBaseItem {
   content: string;
   vectorNamespace?: string;
   order: number;
+  faqItems?: FaqItem[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface AddFaqPayload {
+  collectionName: string;
+  faqItems: FaqItem[];
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Database, AlertCircle, RefreshCw } from "lucide-react";
+import { Database, AlertCircle, RefreshCw, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { KnowledgeBaseItem } from "@/types/api/knowledge-base.types";
@@ -7,11 +7,13 @@ import { getOrganisationKnowledgeBasesApi } from "@/api/knowledge-base.api";
 import KnowledgeBaseCard from "./KnowledgeBaseCard";
 import KnowledgeBaseEmptyState from "./KnowledgeBaseEmptyState";
 import KnowledgeBaseLoadingSkeleton from "./KnowledgeBaseLoadingSkeleton";
+import AddFaqModal from "./AddFaqModal";
 
 const KnowledgeBaseList = () => {
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBaseItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [isAddFaqOpen, setIsAddFaqOpen] = useState(false);
 
   const fetchKnowledgeBases = async () => {
     setIsLoading(true);
@@ -55,7 +57,7 @@ const KnowledgeBaseList = () => {
     fetchKnowledgeBases();
   }, []);
 
-  // Poll every 1 minute while any item is "processing"
+  // Poll every 15 seconds while any item is "processing"
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null,
   );
@@ -108,18 +110,29 @@ const KnowledgeBaseList = () => {
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={fetchKnowledgeBases}
-          disabled={isLoading}
-          className="h-8 gap-1.5 border-white/10 bg-white/5 text-xs hover:bg-white/10 text-muted-foreground hover:text-foreground"
-        >
-          <RefreshCw
-            className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`}
-          />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchKnowledgeBases}
+            disabled={isLoading}
+            className="h-8 gap-1.5 border-white/10 bg-white/5 text-xs hover:bg-white/10 text-muted-foreground hover:text-foreground"
+          >
+            <RefreshCw
+              className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`}
+            />
+            Refresh
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={() => setIsAddFaqOpen(true)}
+            className="h-8 gap-1.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-500 hover:to-blue-500 text-xs shadow-lg shadow-purple-500/20"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add FAQ
+          </Button>
+        </div>
       </div>
 
       {/* Status summary pills */}
@@ -174,7 +187,7 @@ const KnowledgeBaseList = () => {
           </Button>
         </div>
       ) : knowledgeBases.length === 0 ? (
-        <KnowledgeBaseEmptyState />
+        <KnowledgeBaseEmptyState onAddFaq={() => setIsAddFaqOpen(true)} />
       ) : (
         <div className="grid gap-3">
           {knowledgeBases.map((kb) => (
@@ -182,6 +195,13 @@ const KnowledgeBaseList = () => {
           ))}
         </div>
       )}
+
+      {/* Modal */}
+      <AddFaqModal
+        isOpen={isAddFaqOpen}
+        onClose={() => setIsAddFaqOpen(false)}
+        onSuccess={fetchKnowledgeBases}
+      />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import AgentService from "../../agent.service";
 import RedisServiceClass from "../../redis.service";
 import redisExpiryTime from "../../../constants/redis.constant";
 import logger from "../../../config/logger.config";
+import ChromaService from "../../chroma.service";
 
 const messageProcessHandler = async (message: {
   job: string;
@@ -33,10 +34,20 @@ const messageProcessHandler = async (message: {
       const messageId = new mongoose.Types.ObjectId(data.messageId);
       let updateAiMessage: IChatMessage | null = null;
 
+      const chromaService = new ChromaService({
+        collectionName: `knowledge_base_${data.organisationId}`,
+      });
+
+      const chromaQueryData = await chromaService.query(data.message);
+      const context = chromaQueryData
+        .map((doc) => doc.pageContent)
+        .join("\n\n");
+
       try {
         aiResponse = await agentService.processRequest(
           data.message,
           chatDetails,
+          context,
         );
         const tokenUsage = (aiResponse.outputDetails as any)?.response_metadata
           ?.tokenUsage;
